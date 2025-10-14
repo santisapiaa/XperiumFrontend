@@ -1,0 +1,8 @@
+.ContainerLogoCart {
+  display: flex;
+}
+
+.CartIcon {
+  width: 32px;
+  height: 32px;
+}

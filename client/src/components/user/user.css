@@ -1,0 +1,8 @@
+.ContainerLogoUser {
+  display: flex;
+}
+
+.UserIcon {
+  width: 24px;
+  height: 24px;
+}
