@@ -37,19 +37,20 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 2.5rem;
-  color: white;
-  background-color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.3);
+  background: none;
   border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  padding: 0;
   cursor: pointer;
+  outline: none;
+  width: auto;
+  height: auto;
+  transition: color 0.3s ease;
 }
 
 .prev:hover,
 .next:hover {
-  background-color: white;
-  color: black;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .prev {
@@ -58,4 +59,12 @@
 
 .next {
   right: 20px;
+}
+
+.prev:focus,
+.next:focus,
+.prev:active,
+.next:active {
+  outline: none; /* Elimina el óvalo al hacer clic o enfocar */
+  box-shadow: none; /* Elimina cualquier sombra residual */
 }

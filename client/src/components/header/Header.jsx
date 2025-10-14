@@ -12,7 +12,7 @@ function Header() {
   return (
     <header className="header">
       <div className="logo" onClick={goHome}>
-        eXperium
+        Xperium
       </div>
 
       <nav className="nav">
@@ -28,7 +28,9 @@ function Header() {
       </div>
       <div className="actions">
         <User />
-        <CartWidget />
+        <Link to="/carrito">
+          <CartWidget />
+        </Link>
       </div>
     </header>
   );

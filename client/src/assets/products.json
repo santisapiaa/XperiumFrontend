@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "cant_personas": 4,
+    "descripcion": "Deportes y actividades para disfrutar.",
+    "descuento": 0,
+    "estado": "DISPONIBLE",
+    "imagen_url": "https://images.pexels.com/photos/1552106/pexels-photo-1552106.jpeg",
+    "nombre": "Salto en paracaidas",
+    "precio": 100000,
+    "stock": 8,
+    "ubicacion": "Pilar"
+  },
+  {
+    "id": 2,
+    "cant_personas": 2,
+    "descripcion": "Masajes y tratamientos corporales.",
+    "descuento": 0,
+    "estado": "DISPONIBLE",
+    "imagen_url": "https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg",
+    "nombre": "Relax",
+    "precio": 44000,
+    "stock": 10,
+    "ubicacion": "Villa Urquiza"
+  },
+  {
+    "id": 3,
+    "cant_personas": 6,
+    "descripcion": "Cenas y almuerzos en los mejores restaurantes.",
+    "descuento": 0,
+    "estado": "DISPONIBLE",
+    "imagen_url": "https://images.pexels.com/photos/3184183/pexels-photo-3184183.jpeg",
+    "nombre": "Experiencia Gourmet",
+    "precio": 94000,
+    "stock": 10,
+    "ubicacion": "Palermo"
+  },
+  {
+    "id": 4,
+    "cant_personas": 4,
+    "descripcion": "Escape room temático para grupos.",
+    "descuento": 5,
+    "estado": "DISPONIBLE",
+    "imagen_url": "https://images.pexels.com/photos/256401/pexels-photo-256401.jpeg",
+    "nombre": "Escape Room",
+    "precio": 48000,
+    "stock": 12,
+    "ubicacion": "Belgrano"
+  },
+  {
+    "id": 5,
+    "cant_personas": 2,
+    "descripcion": "Clase de cocina gourmet con chef profesional.",
+    "descuento": 0,
+    "estado": "DISPONIBLE",
+    "imagen_url": "https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg",
+    "nombre": "Clase de Cocina",
+    "precio": 70000,
+    "stock": 8,
+    "ubicacion": "San Telmo"
+  },
+  {
+    "id": 6,
+    "cant_personas": 2,
+    "descripcion": "Pase en globo aerostático al amanecer sobre la ciudad.",
+    "descuento": 0,
+    "estado": "DISPONIBLE",
+    "imagen_url": "https://images.pexels.com/photos/163314/hot-air-balloon-balloon-sky-hot-air-balloon-ride-163314.jpeg?_gl=1*12xygdy*_ga*MTU3NjMzNDQ0OS4xNzYwNDgzNzEz*_ga_8JE65Q40S6*czE3NjA0ODM3MTMkbzEkZzEkdDE3NjA0ODM4MDMkajMxJGwwJGgw",
+    "nombre": "Pase en Globo",
+    "precio": 120000,
+    "stock": 6,
+    "ubicacion": "San Isidro"
+  }
+]

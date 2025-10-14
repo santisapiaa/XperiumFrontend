@@ -27,11 +27,24 @@
   gap: 0.5rem;
 }
 
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ubicacion {
+  font-size: 0.95rem;
+  color: #1976d2;
+  font-weight: 500;
+}
+
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
+  gap: 0.5rem;
 }
 
 .precio {
@@ -39,7 +52,28 @@
   color: #333;
 }
 
-.puntaje {
-  color: #ffb400;
-  font-size: 0.9rem;
+.personas {
+  font-size: 0.95rem;
+  color: #888;
+}
+
+.btn-agregar-al-carrito {
+  background-color: white;
+  border: none;
+  color: black;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition-duration: 0.4s;
+  border: 2px solid black;
+  border-radius: 6px;
+  margin-left: 0.5rem;
+}
+.btn-agregar-al-carrito:hover {
+  background-color: black;
+  color: white;
 }

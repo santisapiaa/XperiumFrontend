@@ -9,7 +9,6 @@ function Homepage() {
     <div className="homepage">
       <Header />
       <Carousel />
-      <Footer />
     </div>
   );
 }
