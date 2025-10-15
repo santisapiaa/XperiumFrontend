@@ -4,18 +4,15 @@ import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 import Sidebar from "../../components/sidebar/sidebar";
 import products from "../../assets/products.json";
-import "./Regalospage.css";
+import "./Eventospage.css";
 
-function Regalospage() {
+export default function Eventos() {
   const [gifts, setGifts] = useState([]);
   const [filters, setFilters] = useState({ minPrice: null, maxPrice: null, category: null });
 
   useEffect(() => {
-    setGifts(products);
+    setGifts(products.filter((p) => p.categoria === "Evento"));
   }, []);
-
-  // Extract categories from products using the explicit 'categoria' field
-  const uniqueCategories = Array.from(new Set(products.map((p) => p.categoria))).filter(Boolean);
 
   const handleFilterChange = (newFilter) => {
     if (newFilter.reset) {
@@ -32,6 +29,7 @@ function Regalospage() {
       const max = filters.maxPrice ?? Infinity;
       return gift.precio >= min && gift.precio <= max;
     })();
+
     const categoryOk = (() => {
       if (!filters.category) return true;
       return gift.categoria === filters.category;
@@ -40,13 +38,16 @@ function Regalospage() {
     return priceOk && categoryOk;
   });
 
+  // categories available in events (likely only 'Evento' but keep dynamic)
+  const uniqueCategories = Array.from(new Set(products.map((p) => p.categoria))).filter(Boolean);
+
   return (
-    <div className="regalospage">
+    <div className="eventospage">
       <Header />
       <div className="gifts-container">
         <Sidebar onFilterChange={handleFilterChange} categories={uniqueCategories} />
         <main className="gifts-main">
-          <h2>Regalos con Opciones</h2>
+          <h2>Eventos</h2>
           <div className="cards-container">
             {filteredGifts.map((gift) => (
               <Card key={gift.id} {...gift} />
@@ -54,8 +55,7 @@ function Regalospage() {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 }
-
-export default Regalospage;

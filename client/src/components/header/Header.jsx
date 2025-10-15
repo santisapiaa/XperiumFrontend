@@ -17,9 +17,8 @@ function Header() {
       </div>
 
       <nav className="nav">
-        <Link to="/regalos">Regalos</Link>
-        <a href="#actividades">Actividades</a>
-        <a href="#eventos">Eventos</a>
+        <Link to="/experiencias">Experiencias</Link>
+        <Link to="/eventos">Eventos</Link>
         <a href="#mas-vendidos">Más vendidos</a>
         <Link to="/login" className="link-login">Iniciar sesión</Link>
         <Link to="/register" className="link-register">Registrate</Link>
