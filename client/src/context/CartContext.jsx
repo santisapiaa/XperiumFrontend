@@ -13,7 +13,7 @@ export function CartProvider({ children }) {
           i.id === item.id ? { ...i, amount: i.amount + 1 } : i
         );
       }
-      return [...prev, { ...item, amount: 1 }];
+      return [...prev, { ...item, precio: Number(item.precio), amount: 1 }];
     });
   };
 

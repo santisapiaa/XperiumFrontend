@@ -1,41 +1,18 @@
-import React, { useState } from "react";
+"use client";
+import PriceFilter from "./filters/PriceFilter";
+import CategoryFilter from "./filters/CategoryFilter";
+import LocationFilter from "./filters/LocationFilter";
+import PeopleFilter from "./filters/PeopleFilter";
 import "./sidebar.css";
 
-function Sidebar({ onFilterChange, categories: propCategories }) {
-  const [openSections, setOpenSections] = useState({
-    price: true,
-    categories: true,
-  });
-
-  const toggleSection = (section) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [section]: !prev[section],
-    }));
-  };
-
-  const handlePriceFilter = (range) => {
-    const [min, max] = range;
-    onFilterChange({
-      minPrice: min,
-      maxPrice: max,
-    });
-  };
-
-  const handleCategoryFilter = (category) => {
-    onFilterChange({ category });
-  };
-
-  const priceRanges = [
-    { label: "Hasta $42.000", range: [0, 42000] },
-    { label: "De $42.000 a $96.000", range: [42000, 96000] },
-    { label: "De $96.000 a $209.000", range: [96000, 209000] },
-    { label: "Más de $209.000", range: [209000, Infinity] },
-  ];
-
-  // Use categories passed from parent (Regalospage). If none provided, fall back to defaults.
-  const categories = propCategories && propCategories.length ? propCategories : ["Relax", "Experiencia Gourmet"];
-
+function Sidebar({
+  onFilterChange,
+  categories,
+  showCategoryFilter = true,
+  showPriceFilter = true,
+  showLocationFilter = true,
+  showPeopleFilter = true,
+}) {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -49,61 +26,15 @@ function Sidebar({ onFilterChange, categories: propCategories }) {
         </button>
       </div>
 
-      {/* Sección Precio */}
-      <div className="filter-section">
-        <div
-          className="section-title"
-          onClick={() => toggleSection("price")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && toggleSection("price")}
-        >
-          <span>Precio</span>
-          <span>{openSections.price ? "−" : "+"}</span>
-        </div>
-        {openSections.price && (
-          <div className="section-content">
-            {priceRanges.map((priceRange, index) => (
-              <label key={index}>
-                <input
-                  type="radio"
-                  name="price"
-                  onChange={() => handlePriceFilter(priceRange.range)}
-                />
-                {priceRange.label}
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Sección Categorías */}
-      <div className="filter-section">
-        <div
-          className="section-title"
-          onClick={() => toggleSection("categories")}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === "Enter" && toggleSection("categories")}
-        >
-          <span>Categorías</span>
-          <span>{openSections.categories ? "−" : "+"}</span>
-        </div>
-        {openSections.categories && (
-          <div className="section-content">
-            {categories.map((category, index) => (
-              <label key={index}>
-                <input
-                  type="radio"
-                  name="category"
-                  onChange={() => handleCategoryFilter(category)}
-                />
-                {category}
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
+      {showPriceFilter && <PriceFilter onFilterChange={onFilterChange} />}
+      {showCategoryFilter && categories && categories.length > 0 && (
+        <CategoryFilter
+          categories={categories}
+          onFilterChange={onFilterChange}
+        />
+      )}
+      {showLocationFilter && <LocationFilter onFilterChange={onFilterChange} />}
+      {showPeopleFilter && <PeopleFilter onFilterChange={onFilterChange} />}
     </aside>
   );
 }

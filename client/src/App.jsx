@@ -6,6 +6,7 @@ import Cartpage from "./pages/cart/Cartpage";
 import LoginPage from "./pages/login/LoginPage";
 import RegisterPage from "./pages/login/RegisterPage";
 import Footer from "./components/footer/Footer";
+import PerfilPage from "./pages/perfil/PerfilPage";
 
 function App() {
   return (
@@ -18,10 +19,11 @@ function App() {
             <Route path="/eventos" element={<Eventos />} />
             <Route path="/carrito" element={<Cartpage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </main>
-      <Footer />
+        <Footer />
       </div>
     </BrowserRouter>
   );

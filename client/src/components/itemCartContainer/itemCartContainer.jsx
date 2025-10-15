@@ -6,8 +6,11 @@ import "./ItemCartContainer.css";
 
 const ItemCartContainer = () => {
   const { cartItems, deleteAll, productsLength } = useContext(CartContext);
+
+  // ¡Usa current.precio!
   const total = cartItems.reduce(
-    (previous, current) => previous + current.amount * current.price,
+    (previous, current) =>
+      previous + Number(current.precio) * Number(current.amount),
     0
   );
 
@@ -21,15 +24,18 @@ const ItemCartContainer = () => {
         </div>
       ) : (
         <div>
-          <button onClick={deleteAll}>Vaciar carrito</button>
-          <div className="cart-items">
-            {cartItems.map((item) => (
-              <ItemCart info={item} key={item.id} />
-            ))}
-          </div>
-          <div className="cart-total">
-            <span>Total: ${total.toLocaleString()}</span>
-            <span>({productsLength} productos)</span>
+          <div className="cart-container">
+            <button onClick={deleteAll}>Vaciar carrito</button>
+            <div className="cart-items">
+              {cartItems.map((item) => (
+                <ItemCart info={item} key={item.id} />
+              ))}
+            </div>
+            <div className="cart-total">
+              <span>Total: ${total.toLocaleString()}</span>
+              <span>({productsLength} productos)</span>
+              <button>Comprar</button>
+            </div>
           </div>
         </div>
       )}

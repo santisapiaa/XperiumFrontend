@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { CartContext } from "../../context/CartContext";
 
 const ItemCart = ({ info }) => {
-  const { deleteToCart } = useContext(CartContext);
+  const { addToCart, deleteToCart } = useContext(CartContext);
   const totalamountprice = info.precio * info.amount;
 
   return (
@@ -12,14 +12,19 @@ const ItemCart = ({ info }) => {
         <h4 className="cart-item-title">{info.nombre}</h4>
         <p className="cart-item-desc">{info.descripcion}</p>
         <div className="cart-item-meta">
-          <span className="cart-item-qty">Cantidad: {info.amount}</span>
+          <span className="cart-item-qty">
+            <button className="qty-btn" onClick={() => deleteToCart(info)}>
+              -
+            </button>
+            <span className="qty-number">{info.amount}</span>
+            <button className="qty-btn" onClick={() => addToCart(info)}>
+              +
+            </button>
+          </span>
           <span className="cart-item-price">
             Subtotal: <b>${totalamountprice.toLocaleString()}</b>
           </span>
         </div>
-        <button className="cart-item-remove" onClick={() => deleteToCart(info)}>
-          Quitar uno
-        </button>
       </div>
     </div>
   );
