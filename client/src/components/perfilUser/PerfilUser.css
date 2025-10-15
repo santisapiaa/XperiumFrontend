@@ -80,6 +80,224 @@
   min-width: 260px;
 }
 
+/* Estilos para direcciones */
+.perfil-sin-direcciones {
+  color: #888;
+  font-style: italic;
+  margin: 0;
+}
+
+.perfil-direccion-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background: #fafbfc;
+}
+
+.perfil-direccion-item:last-child {
+  margin-bottom: 0;
+}
+
+.perfil-direccion-contenido {
+  margin-bottom: 12px;
+}
+
+.perfil-direccion-badge {
+  display: inline-block;
+  background: #1976d2;
+  color: white;
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.perfil-direccion-texto {
+  line-height: 1.6;
+  color: #333;
+}
+
+.perfil-direccion-acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.perfil-btn-editar,
+.perfil-btn-eliminar {
+  padding: 6px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.perfil-btn-editar {
+  color: #1976d2;
+  border-color: #1976d2;
+}
+
+.perfil-btn-editar:hover {
+  background: #1976d2;
+  color: white;
+}
+
+.perfil-btn-eliminar {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.perfil-btn-eliminar:hover {
+  background: #d32f2f;
+  color: white;
+}
+
+.perfil-btn-agregar {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+}
+
+/* Estilos para el modal de dirección */
+.perfil-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.perfil-modal-contenido {
+  background: white;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.perfil-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.perfil-modal-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.perfil-modal-cerrar {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.perfil-modal-cerrar:hover {
+  background: #f0f0f0;
+}
+
+.perfil-form-direccion {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.perfil-form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.perfil-form-direccion input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.perfil-form-direccion input[type="text"]:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.perfil-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.perfil-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.perfil-form-acciones {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.perfil-btn-cancelar,
+.perfil-btn-guardar {
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.perfil-btn-cancelar {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.perfil-btn-cancelar:hover {
+  background: #e0e0e0;
+}
+
+.perfil-btn-guardar {
+  background: #1976d2;
+  color: white;
+}
+
+.perfil-btn-guardar:hover {
+  background: #1565c0;
+}
+
 @media (max-width: 900px) {
   .perfil-grid {
     grid-template-columns: 1fr;
@@ -87,5 +305,8 @@
   }
   .perfil-main {
     grid-row: auto;
+  }
+  .perfil-form-row {
+    grid-template-columns: 1fr;
   }
 }

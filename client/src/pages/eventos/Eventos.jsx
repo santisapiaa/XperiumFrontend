@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Card from "../../components/card/Card";
 import Header from "../../components/header/Header";
-import Footer from "../../components/footer/Footer";
 import Sidebar from "../../components/sidebar/sidebar";
 import products from "../../assets/products.json";
 import "./Eventospage.css";
@@ -90,7 +89,6 @@ export default function Eventos() {
           </div>
         </main>
       </div>
-      <Footer />
     </div>
   );
 }

@@ -1,0 +1,175 @@
+.mis-compras-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.mis-compras-container h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.no-compras {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  padding: 40px;
+}
+
+.ordenes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.orden-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.orden-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.orden-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 20px;
+}
+
+.orden-info h3 {
+  font-size: 1.5rem;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.orden-fecha {
+  color: #666;
+  margin: 4px 0;
+  font-size: 0.95rem;
+}
+
+.orden-estado {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.orden-estado.finalizada {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.orden-estado.pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.orden-estado.cancelada {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.orden-total {
+  text-align: right;
+}
+
+.total-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 4px 0;
+}
+
+.total-monto {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.orden-detalles h4 {
+  font-size: 1.1rem;
+  margin: 0 0 16px 0;
+  color: #555;
+}
+
+.detalle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.detalle-info {
+  flex: 1;
+}
+
+.producto-nombre {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #333;
+  margin: 0 0 6px 0;
+}
+
+.producto-cantidad {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.detalle-precio {
+  text-align: right;
+}
+
+.precio-unitario {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 4px 0;
+}
+
+.subtotal {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .mis-compras-container {
+    padding: 15px;
+  }
+
+  .orden-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .orden-total {
+    text-align: left;
+  }
+
+  .detalle-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .detalle-precio {
+    text-align: left;
+    width: 100%;
+  }
+}

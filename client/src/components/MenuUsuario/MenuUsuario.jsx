@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function MenuUsuario({ onClose }) {
@@ -22,6 +24,11 @@ function MenuUsuario({ onClose }) {
 
   const handlePerfil = () => {
     navigate("/perfil");
+    if (onClose) onClose();
+  };
+
+  const handleCompras = () => {
+    navigate("/compras");
     if (onClose) onClose();
   };
 
@@ -64,7 +71,20 @@ function MenuUsuario({ onClose }) {
           cursor: "pointer",
         }}
       >
-        👀 Ver perfil
+        Ver perfil
+      </button>
+      <button
+        onClick={handleCompras}
+        style={{
+          width: "100%",
+          border: "none",
+          background: "none",
+          padding: "10px 15px",
+          textAlign: "left",
+          cursor: "pointer",
+        }}
+      >
+        Mis compras
       </button>
       <button
         onClick={handleLogout}
@@ -78,7 +98,7 @@ function MenuUsuario({ onClose }) {
           color: "red",
         }}
       >
-        🚪 Cerrar sesión
+        Cerrar sesión
       </button>
     </div>
   );

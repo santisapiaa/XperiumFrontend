@@ -10,7 +10,6 @@
 }
 
 .app-content {
-  --footer-height: 80px; /* espacio reservado para el footer */
+  /* Removed padding-bottom since footer is no longer fixed */
   flex: 1 1 auto; /* crece para empujar el footer al final */
-  padding-bottom: var(--footer-height);
 }

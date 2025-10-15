@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PerfilUser from "../../components/perfilUser/perfilUser";
+import PerfilUser from "../../components/perfilUser/PerfilUser";
 import Header from "../../components/header/Header";
 import Footer from "../../components/footer/Footer";
 function PerfilPage() {
