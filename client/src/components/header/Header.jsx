@@ -1,12 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
 import User from "../user/user";
 import CartWidget from "../cartwidget/cartWidget";
 
 function Header() {
+  const navigate = useNavigate();
   const goHome = () => {
-    window.location.href = "/"; // redirige al inicio
+    navigate("/");
   };
 
   return (
@@ -20,6 +21,8 @@ function Header() {
         <a href="#actividades">Actividades</a>
         <a href="#eventos">Eventos</a>
         <a href="#mas-vendidos">Más vendidos</a>
+        <Link to="/login" className="link-login">Iniciar sesión</Link>
+        <Link to="/register" className="link-register">Registrate</Link>
       </nav>
 
       <div className="actions">
