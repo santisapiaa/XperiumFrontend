@@ -1,139 +1,127 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import "./PerfilUser.css";
+import { useState, useEffect } from "react"
+import { direccionesAPI } from "../../services/api"
+import "./PerfilUser.css"
 
 const PerfilUser = () => {
-  const [user, setUser] = useState(null);
-  const [direcciones, setDirecciones] = useState([]);
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
-  const [direccionEditando, setDireccionEditando] = useState(null);
+  const [user, setUser] = useState(null)
+  const [direcciones, setDirecciones] = useState([])
+  const [mostrarFormulario, setMostrarFormulario] = useState(false)
+  const [direccionEditando, setDireccionEditando] = useState(null)
+  const [loading, setLoading] = useState(false)
   const [formularioDireccion, setFormularioDireccion] = useState({
     calle: "",
     numero: "",
-    ciudad: "",
-    provincia: "",
+    departamento: "",
     codigo_postal: "",
-    es_principal: false,
-  });
+  })
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado");
-    if (usuarioGuardado) {
-      const userData = JSON.parse(usuarioGuardado);
-      setUser(userData);
-      cargarDirecciones(userData.id);
-    }
-  }, []);
+    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
 
-  const cargarDirecciones = (userId) => {
-    const todasDirecciones =
-      JSON.parse(localStorage.getItem("direccionesUsuarios")) || [];
-    const direccionesUsuario = todasDirecciones.filter(
-      (dir) => dir.usuario_id === userId
-    );
-    setDirecciones(direccionesUsuario);
-  };
+    if (usuarioGuardado) {
+      const userData = JSON.parse(usuarioGuardado)
+      setUser(userData)
+      cargarDirecciones()
+    }
+  }, [])
+
+  const cargarDirecciones = async () => {
+    try {
+      setLoading(true)
+      const response = await direccionesAPI.getAll()
+      // API returns paginated data
+      setDirecciones(response.content || response)
+    } catch (error) {
+      console.error("Error al cargar direcciones:", error)
+      alert("Error al cargar las direcciones")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleDireccionChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target
     setFormularioDireccion({
       ...formularioDireccion,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
+      [name]: value,
+    })
+  }
 
-  const guardarDireccion = (e) => {
-    e.preventDefault();
+  const guardarDireccion = async (e) => {
+    e.preventDefault()
 
-    if (
-      !formularioDireccion.calle ||
-      !formularioDireccion.numero ||
-      !formularioDireccion.ciudad
-    ) {
-      alert("Por favor, completá los campos obligatorios.");
-      return;
+    if (!formularioDireccion.calle || !formularioDireccion.numero || !formularioDireccion.departamento) {
+      alert("Por favor, completá los campos obligatorios.")
+      return
     }
 
     // Verificar límite de 2 direcciones
     if (!direccionEditando && direcciones.length >= 2) {
-      alert("Solo podés tener un máximo de 2 direcciones.");
-      return;
+      alert("Solo podés tener un máximo de 2 direcciones.")
+      return
     }
 
-    const todasDirecciones =
-      JSON.parse(localStorage.getItem("direccionesUsuarios")) || [];
-
-    if (direccionEditando) {
-      // Editar dirección existente
-      const index = todasDirecciones.findIndex(
-        (dir) => dir.id === direccionEditando.id
-      );
-      todasDirecciones[index] = {
-        ...direccionEditando,
-        ...formularioDireccion,
-      };
-    } else {
-      // Crear nueva dirección
-      const nuevaDireccion = {
-        id: Date.now(),
-        usuario_id: user.id,
-        ...formularioDireccion,
-      };
-      todasDirecciones.push(nuevaDireccion);
+    try {
+      setLoading(true)
+      if (direccionEditando) {
+        // Editar dirección existente
+        await direccionesAPI.update(direccionEditando.id, formularioDireccion)
+      } else {
+        // Crear nueva dirección
+        await direccionesAPI.create(formularioDireccion)
+      }
+      await cargarDirecciones()
+      cerrarFormulario()
+      alert("Dirección guardada exitosamente")
+    } catch (error) {
+      console.error("Error al guardar dirección:", error)
+      alert("Error al guardar la dirección")
+    } finally {
+      setLoading(false)
     }
+  }
 
-    localStorage.setItem(
-      "direccionesUsuarios",
-      JSON.stringify(todasDirecciones)
-    );
-    cargarDirecciones(user.id);
-    cerrarFormulario();
-  };
+  const eliminarDireccion = async (direccionId) => {
+    if (!confirm("¿Estás seguro de eliminar esta dirección?")) return
 
-  const eliminarDireccion = (direccionId) => {
-    if (!confirm("¿Estás seguro de eliminar esta dirección?")) return;
-
-    const todasDirecciones =
-      JSON.parse(localStorage.getItem("direccionesUsuarios")) || [];
-    const direccionesFiltradas = todasDirecciones.filter(
-      (dir) => dir.id !== direccionId
-    );
-
-    localStorage.setItem(
-      "direccionesUsuarios",
-      JSON.stringify(direccionesFiltradas)
-    );
-    cargarDirecciones(user.id);
-  };
+    try {
+      setLoading(true)
+      await direccionesAPI.delete(direccionId)
+      await cargarDirecciones()
+      alert("Dirección eliminada exitosamente")
+    } catch (error) {
+      console.error("Error al eliminar dirección:", error)
+      alert("Error al eliminar la dirección")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const editarDireccion = (direccion) => {
-    setDireccionEditando(direccion);
+    setDireccionEditando(direccion)
     setFormularioDireccion({
       calle: direccion.calle,
       numero: direccion.numero,
-      ciudad: direccion.ciudad,
-      provincia: direccion.provincia,
+      departamento: direccion.departamento,
       codigo_postal: direccion.codigo_postal,
-      es_principal: direccion.es_principal,
-    });
-    setMostrarFormulario(true);
-  };
+    })
+    setMostrarFormulario(true)
+  }
 
   const cerrarFormulario = () => {
-    setMostrarFormulario(false);
-    setDireccionEditando(null);
+    setMostrarFormulario(false)
+    setDireccionEditando(null)
     setFormularioDireccion({
       calle: "",
       numero: "",
-      ciudad: "",
-      provincia: "",
+      departamento: "",
       codigo_postal: "",
-      es_principal: false,
-    });
-  };
+    })
+  }
 
-  if (!user) return <div>Cargando...</div>;
+  if (!user) return <div>Cargando...</div>
 
   return (
     <div className="perfil-grid">
@@ -182,23 +170,21 @@ const PerfilUser = () => {
             <button
               className="perfil-link perfil-btn-agregar"
               onClick={() => setMostrarFormulario(true)}
+              disabled={loading}
             >
               + Agregar dirección
             </button>
           )}
         </div>
         <div className="perfil-panel-body">
-          {direcciones.length === 0 ? (
-            <p className="perfil-sin-direcciones">
-              No tenés direcciones guardadas
-            </p>
+          {loading ? (
+            <p>Cargando direcciones...</p>
+          ) : direcciones.length === 0 ? (
+            <p className="perfil-sin-direcciones">No tenés direcciones guardadas</p>
           ) : (
             direcciones.map((direccion) => (
               <div key={direccion.id} className="perfil-direccion-item">
                 <div className="perfil-direccion-contenido">
-                  {direccion.es_principal && (
-                    <span className="perfil-direccion-badge">Principal</span>
-                  )}
                   <div className="perfil-direccion-texto">
                     <strong>
                       {user.nombre} {user.apellido}
@@ -206,21 +192,18 @@ const PerfilUser = () => {
                     <br />
                     {direccion.calle} {direccion.numero}
                     <br />
-                    {direccion.ciudad}
-                    {direccion.provincia && `, ${direccion.provincia}`}
+                    {direccion.departamento}
                     {direccion.codigo_postal && ` (${direccion.codigo_postal})`}
                   </div>
                 </div>
                 <div className="perfil-direccion-acciones">
-                  <button
-                    className="perfil-btn-editar"
-                    onClick={() => editarDireccion(direccion)}
-                  >
+                  <button className="perfil-btn-editar" onClick={() => editarDireccion(direccion)} disabled={loading}>
                     Editar
                   </button>
                   <button
                     className="perfil-btn-eliminar"
                     onClick={() => eliminarDireccion(direccion.id)}
+                    disabled={loading}
                   >
                     Eliminar
                   </button>
@@ -233,18 +216,10 @@ const PerfilUser = () => {
 
       {mostrarFormulario && (
         <div className="perfil-modal-overlay" onClick={cerrarFormulario}>
-          <div
-            className="perfil-modal-contenido"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="perfil-modal-contenido" onClick={(e) => e.stopPropagation()}>
             <div className="perfil-modal-header">
-              <h3>
-                {direccionEditando ? "Editar dirección" : "Nueva dirección"}
-              </h3>
-              <button
-                className="perfil-modal-cerrar"
-                onClick={cerrarFormulario}
-              >
+              <h3>{direccionEditando ? "Editar dirección" : "Nueva dirección"}</h3>
+              <button className="perfil-modal-cerrar" onClick={cerrarFormulario}>
                 ×
               </button>
             </div>
@@ -269,18 +244,11 @@ const PerfilUser = () => {
               </div>
               <input
                 type="text"
-                name="ciudad"
-                placeholder="Ciudad *"
-                value={formularioDireccion.ciudad}
+                name="departamento"
+                placeholder="Departamento *"
+                value={formularioDireccion.departamento}
                 onChange={handleDireccionChange}
                 required
-              />
-              <input
-                type="text"
-                name="provincia"
-                placeholder="Provincia"
-                value={formularioDireccion.provincia}
-                onChange={handleDireccionChange}
               />
               <input
                 type="text"
@@ -289,25 +257,12 @@ const PerfilUser = () => {
                 value={formularioDireccion.codigo_postal}
                 onChange={handleDireccionChange}
               />
-              <label className="perfil-checkbox-label">
-                <input
-                  type="checkbox"
-                  name="es_principal"
-                  checked={formularioDireccion.es_principal}
-                  onChange={handleDireccionChange}
-                />
-                Marcar como dirección principal
-              </label>
               <div className="perfil-form-acciones">
-                <button
-                  type="button"
-                  className="perfil-btn-cancelar"
-                  onClick={cerrarFormulario}
-                >
+                <button type="button" className="perfil-btn-cancelar" onClick={cerrarFormulario} disabled={loading}>
                   Cancelar
                 </button>
-                <button type="submit" className="perfil-btn-guardar">
-                  Guardar
+                <button type="submit" className="perfil-btn-guardar" disabled={loading}>
+                  {loading ? "Guardando..." : "Guardar"}
                 </button>
               </div>
             </form>
@@ -315,7 +270,7 @@ const PerfilUser = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default PerfilUser;
+export default PerfilUser

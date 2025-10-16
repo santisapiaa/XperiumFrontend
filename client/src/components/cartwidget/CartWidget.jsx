@@ -1,16 +1,14 @@
-import logo from "./cartIcon.png";
-import "./CartWidget.css";
+import logo from "./cartIcon.png"
+import "./CartWidget.css"
 
 const CartWidget = () => {
   return (
     <div>
       <div className="ContainerLogoCart">
-        <a href="#mas-carrito">
-          <img className="CartIcon" src={logo} />
-        </a>
+        <img className="CartIcon" src={logo || "/placeholder.svg"} alt="Carrito" />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CartWidget;
+export default CartWidget

@@ -2,15 +2,14 @@
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import "./Register.css"
+import "../login/LoginPage.css"
 import { authAPI } from "../../services/api"
 
-function Register() {
+function RegisterProveedorPage() {
   const navigate = useNavigate()
 
   const [userData, setUserData] = useState({
     nombre: "",
-    apellido: "",
     email: "",
     telefono: "",
     contrasenia: "",
@@ -29,7 +28,7 @@ function Register() {
     e.preventDefault()
     setError("")
 
-    if (!userData.nombre || !userData.apellido || !userData.email || !userData.telefono || !userData.contrasenia) {
+    if (!userData.nombre || !userData.email || !userData.telefono || !userData.contrasenia) {
       setError("Por favor, completá todos los campos.")
       return
     }
@@ -42,22 +41,20 @@ function Register() {
     setLoading(true)
 
     try {
-      const nuevoUsuario = {
+      const nuevoProveedor = {
         nombre: userData.nombre,
-        apellido: userData.apellido,
         email: userData.email,
         telefono: userData.telefono,
         contrasenia: userData.contrasenia,
-        role: "COMPRADOR",
       }
 
-      await authAPI.registerComprador(nuevoUsuario)
+      await authAPI.registerProveedor(nuevoProveedor)
 
-      alert("Usuario registrado correctamente.")
+      alert("Proveedor registrado correctamente.")
       navigate("/login")
     } catch (error) {
-      console.error("Error al registrar usuario:", error)
-      setError(error.message || "Error al registrar usuario.")
+      console.error("Error al registrar proveedor:", error)
+      setError(error.message || "Error al registrar proveedor.")
     } finally {
       setLoading(false)
     }
@@ -66,7 +63,7 @@ function Register() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>Crear cuenta</h1>
+        <h1>Registrarse como Vendedor</h1>
 
         {error && (
           <div
@@ -87,7 +84,6 @@ function Register() {
 
         <form className="login-form" onSubmit={handleRegister}>
           <input type="text" name="nombre" placeholder="Nombre" value={userData.nombre} onChange={handleChange} />
-          <input type="text" name="apellido" placeholder="Apellido" value={userData.apellido} onChange={handleChange} />
           <input
             type="email"
             name="email"
@@ -112,7 +108,7 @@ function Register() {
           />
 
           <button type="submit" disabled={loading}>
-            {loading ? "Registrando..." : "Registrarme"}
+            {loading ? "Registrando..." : "Registrarme como Vendedor"}
           </button>
         </form>
 
@@ -133,4 +129,4 @@ function Register() {
   )
 }
 
-export default Register
+export default RegisterProveedorPage

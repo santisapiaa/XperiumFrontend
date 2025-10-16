@@ -1,39 +1,94 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 
 function MenuUsuario({ onClose }) {
-  const navigate = useNavigate();
-  const [usuario, setUsuario] = useState(null);
+  const navigate = useNavigate()
+  const [usuario, setUsuario] = useState(null)
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado");
+    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
     if (usuarioGuardado) {
-      const datosUsuario = JSON.parse(usuarioGuardado);
-      setUsuario(datosUsuario);
+      const datosUsuario = JSON.parse(usuarioGuardado)
+      setUsuario(datosUsuario)
     }
-  }, []);
+  }, [])
 
   const handleLogout = () => {
-    localStorage.removeItem("usuarioLogueado");
-    alert("👋 Sesión cerrada correctamente");
-    navigate("/login");
-    if (onClose) onClose();
-  };
+    localStorage.removeItem("usuarioLogueado")
+    localStorage.removeItem("token")
+    alert("👋 Sesión cerrada correctamente")
+    navigate("/login")
+    if (onClose) onClose()
+  }
 
   const handlePerfil = () => {
-    navigate("/perfil");
-    if (onClose) onClose();
-  };
+    navigate("/perfil")
+    if (onClose) onClose()
+  }
 
   const handleCompras = () => {
-    navigate("/compras");
-    if (onClose) onClose();
-  };
+    navigate("/compras")
+    if (onClose) onClose()
+  }
 
-  // Si no hay usuario logueado, no mostramos nada
-  if (!usuario) return null;
+  const handleLogin = () => {
+    navigate("/login")
+    if (onClose) onClose()
+  }
+
+  const handleRegister = () => {
+    navigate("/register")
+    if (onClose) onClose()
+  }
+
+  if (!usuario) {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          top: "60px",
+          right: "0",
+          zIndex: "999",
+          backgroundColor: "#fff",
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+          width: "180px",
+          padding: "10px 0",
+        }}
+      >
+        <button
+          onClick={handleLogin}
+          style={{
+            width: "100%",
+            border: "none",
+            background: "none",
+            padding: "10px 15px",
+            textAlign: "left",
+            cursor: "pointer",
+            fontWeight: "500",
+          }}
+        >
+          🔐 Iniciar sesión
+        </button>
+        <button
+          onClick={handleRegister}
+          style={{
+            width: "100%",
+            border: "none",
+            background: "none",
+            padding: "10px 15px",
+            textAlign: "left",
+            cursor: "pointer",
+          }}
+        >
+          📝 Registrate
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div
@@ -71,7 +126,7 @@ function MenuUsuario({ onClose }) {
           cursor: "pointer",
         }}
       >
-        Ver perfil
+        👀 Ver perfil
       </button>
       <button
         onClick={handleCompras}
@@ -84,7 +139,7 @@ function MenuUsuario({ onClose }) {
           cursor: "pointer",
         }}
       >
-        Mis compras
+        🛍️ Mis compras
       </button>
       <button
         onClick={handleLogout}
@@ -98,10 +153,10 @@ function MenuUsuario({ onClose }) {
           color: "red",
         }}
       >
-        Cerrar sesión
+        🚪 Cerrar sesión
       </button>
     </div>
-  );
+  )
 }
 
-export default MenuUsuario;
+export default MenuUsuario

@@ -1,14 +1,14 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Header.css";
-import User from "../user/user";
-import CartWidget from "../cartwidget/cartWidget";
+"use client"
+import { Link, useNavigate } from "react-router-dom"
+import "./Header.css"
+import User from "../user/user"
+import CartWidget from "../cartwidget/cartWidget"
 
 function Header() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const goHome = () => {
-    navigate("/");
-  };
+    navigate("/")
+  }
 
   return (
     <header className="header">
@@ -19,12 +19,7 @@ function Header() {
       <nav className="nav">
         <Link to="/experiencias">Experiencias</Link>
         <Link to="/eventos">Eventos</Link>
-        <Link to="/login" className="link-login">
-          Iniciar sesión
-        </Link>
-        <Link to="/register" className="link-register">
-          Registrate
-        </Link>
+        <a href="#mas-vendidos">Más vendidos</a>
       </nav>
 
       <div className="actions">
@@ -38,7 +33,7 @@ function Header() {
         </Link>
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

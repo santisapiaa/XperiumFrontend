@@ -1,85 +1,65 @@
-"use client";
+"use client"
 
-import { useContext } from "react";
-import { CartContext } from "../../context/CartContext";
-import ItemCart from "./itemCart";
-import { Link } from "react-router-dom";
-import "./ItemCartContainer.css";
+import { useContext, useState } from "react"
+import { CartContext } from "../../context/CartContext"
+import { ordenesDeCompraAPI, detallesOrdenAPI } from "../../services/api"
+import ItemCart from "./itemCart"
+import { Link } from "react-router-dom"
+import "./ItemCartContainer.css"
 
 const ItemCartContainer = () => {
-  const { cartItems, deleteAll, productsLength } = useContext(CartContext);
+  const { cartItems, deleteAll, productsLength } = useContext(CartContext)
+  const [loading, setLoading] = useState(false)
 
-  // ¡Usa current.precio!
-  const total = cartItems.reduce(
-    (previous, current) =>
-      previous + Number(current.precio) * Number(current.amount),
-    0
-  );
+  const total = cartItems.reduce((previous, current) => previous + Number(current.precio) * Number(current.amount), 0)
 
-  const handleComprar = () => {
-    // Verificar si hay un usuario logueado
-    const usuarioLogueado = localStorage.getItem("usuarioLogueado");
+  const handleComprar = async () => {
+    const usuarioLogueado = localStorage.getItem("usuarioLogueado")
 
     if (!usuarioLogueado) {
-      alert("❌ Debes iniciar sesión para realizar una compra.");
-      return;
+      alert("❌ Debes iniciar sesión para realizar una compra.")
+      return
     }
 
     if (cartItems.length === 0) {
-      alert("❌ El carrito está vacío.");
-      return;
+      alert("❌ El carrito está vacío.")
+      return
     }
 
-    const usuario = JSON.parse(usuarioLogueado);
+    try {
+      setLoading(true)
 
-    // Obtener órdenes existentes o crear array vacío
-    const ordenesExistentes =
-      JSON.parse(localStorage.getItem("ordenDeCompra")) || [];
-    const detallesExistentes =
-      JSON.parse(localStorage.getItem("detalleDeCompra")) || [];
+      // Create order
+      const ordenData = {
+        total: total,
+        estado: "FINALIZADA",
+      }
 
-    // Generar ID único para la orden
-    const ordenId =
-      ordenesExistentes.length > 0
-        ? Math.max(...ordenesExistentes.map((o) => o.id)) + 1
-        : 1;
+      const ordenCreada = await ordenesDeCompraAPI.create(ordenData)
 
-    // Crear la orden de compra
-    const nuevaOrden = {
-      id: ordenId,
-      comprador_id: usuario.id,
-      fecha: new Date().toISOString().split("T")[0], // Formato YYYY-MM-DD
-      total: total,
-      estado: "FINALIZADA",
-    };
+      // Create order details for each product
+      for (const item of cartItems) {
+        const detalleData = {
+          orden_de_compra_id: ordenCreada.id,
+          producto_id: item.id,
+          cantidad: item.amount,
+          precio_unitario: Number(item.precio),
+        }
+        await detallesOrdenAPI.create(detalleData)
+      }
 
-    // Crear los detalles de compra para cada producto
-    const nuevosDetalles = cartItems.map((item, index) => ({
-      id: detallesExistentes.length + index + 1,
-      orden_de_compra_id: ordenId,
-      producto_id: item.id,
-      cantidad: item.amount,
-      precio_unitario: Number(item.precio),
-    }));
+      alert(
+        `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenCreada.id}\nTotal: $${total.toLocaleString()}\nProductos: ${productsLength}`,
+      )
 
-    // Guardar en localStorage
-    localStorage.setItem(
-      "ordenDeCompra",
-      JSON.stringify([...ordenesExistentes, nuevaOrden])
-    );
-    localStorage.setItem(
-      "detalleDeCompra",
-      JSON.stringify([...detallesExistentes, ...nuevosDetalles])
-    );
-
-    // Mostrar confirmación
-    alert(
-      `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenId}\nTotal: $${total.toLocaleString()}\nProductos: ${productsLength}`
-    );
-
-    // Vaciar el carrito
-    deleteAll();
-  };
+      deleteAll()
+    } catch (error) {
+      console.error("Error al realizar la compra:", error)
+      alert("❌ Error al procesar la compra. Por favor, intenta nuevamente.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <main className="cart-main">
@@ -92,7 +72,9 @@ const ItemCartContainer = () => {
       ) : (
         <div>
           <div className="cart-container">
-            <button onClick={deleteAll}>Vaciar carrito</button>
+            <button onClick={deleteAll} disabled={loading}>
+              Vaciar carrito
+            </button>
             <div className="cart-items">
               {cartItems.map((item) => (
                 <ItemCart info={item} key={item.id} />
@@ -101,13 +83,15 @@ const ItemCartContainer = () => {
             <div className="cart-total">
               <span>Total: ${total.toLocaleString()}</span>
               <span>({productsLength} productos)</span>
-              <button onClick={handleComprar}>Comprar</button>
+              <button onClick={handleComprar} disabled={loading}>
+                {loading ? "Procesando..." : "Comprar"}
+              </button>
             </div>
           </div>
         </div>
       )}
     </main>
-  );
-};
+  )
+}
 
-export default ItemCartContainer;
+export default ItemCartContainer

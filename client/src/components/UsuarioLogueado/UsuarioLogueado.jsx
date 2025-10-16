@@ -1,28 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+"use client"
+
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 function UsuarioLogueado() {
-  const [usuario, setUsuario] = useState(null);
-  const navigate = useNavigate();
+  const [usuario, setUsuario] = useState(null)
+  const navigate = useNavigate()
 
   // Al cargar el componente, leemos el usuario guardado
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado");
+    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
     if (usuarioGuardado) {
-      const datosUsuario = JSON.parse(usuarioGuardado);
-      setUsuario(datosUsuario);
+      const datosUsuario = JSON.parse(usuarioGuardado)
+      setUsuario(datosUsuario)
     }
-  }, []);
+  }, [])
 
   // Si no hay usuario logueado, no mostramos nada
-  if (!usuario) return null;
+  if (!usuario) return null
 
   // Función para cerrar sesión
   const handleLogout = () => {
-    localStorage.removeItem("usuarioLogueado");
-    alert("👋 Sesión cerrada correctamente");
-    navigate("/login"); // vuelve al login
-  };
+    localStorage.removeItem("usuarioLogueado")
+    alert("👋 Sesión cerrada correctamente")
+    navigate("/login") // vuelve al login
+  }
 
   // Renderizamos el saludo y el botón de cerrar sesión
   return (
@@ -56,7 +58,7 @@ function UsuarioLogueado() {
         Cerrar sesión
       </button>
     </div>
-  );
+  )
 }
 
-export default UsuarioLogueado;
+export default UsuarioLogueado

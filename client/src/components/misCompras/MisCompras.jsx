@@ -1,67 +1,68 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import productsData from "../../assets/products.json";
-import "./MisCompras.css";
+import { useEffect, useState } from "react"
+import { ordenesDeCompraAPI } from "../../services/api"
+import "./MisCompras.css"
 
 function MisCompras() {
-  const [ordenes, setOrdenes] = useState([]);
-  const [usuario, setUsuario] = useState(null);
+  const [ordenes, setOrdenes] = useState([])
+  const [usuario, setUsuario] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Obtener usuario logueado
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado");
+    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
     if (usuarioGuardado) {
-      const datosUsuario = JSON.parse(usuarioGuardado);
-      setUsuario(datosUsuario);
-
-      // Obtener órdenes de compra del usuario
-      const ordenesGuardadas = localStorage.getItem("ordenDeCompra");
-      const detallesGuardados = localStorage.getItem("detalleDeCompra");
-
-      if (ordenesGuardadas && detallesGuardados) {
-        const todasLasOrdenes = JSON.parse(ordenesGuardadas);
-        const todosLosDetalles = JSON.parse(detallesGuardados);
-
-        // Filtrar órdenes del usuario logueado
-        const ordenesDelUsuario = todasLasOrdenes.filter(
-          (orden) => orden.comprador_id === datosUsuario.id
-        );
-
-        // Agregar detalles a cada orden
-        const ordenesConDetalles = ordenesDelUsuario.map((orden) => {
-          const detallesOrden = todosLosDetalles.filter(
-            (detalle) => detalle.orden_de_compra_id === orden.id
-          );
-
-          // Agregar información del producto a cada detalle
-          const detallesConProducto = detallesOrden.map((detalle) => {
-            const producto = productsData.find(
-              (p) => p.id === detalle.producto_id
-            );
-            return {
-              ...detalle,
-              producto: producto || { nombre: "Producto no encontrado" },
-            };
-          });
-
-          return {
-            ...orden,
-            detalles: detallesConProducto,
-          };
-        });
-
-        setOrdenes(ordenesConDetalles);
-      }
+      const datosUsuario = JSON.parse(usuarioGuardado)
+      setUsuario(datosUsuario)
+      cargarOrdenes()
+    } else {
+      setLoading(false)
     }
-  }, []);
+  }, [])
+
+  const cargarOrdenes = async () => {
+    try {
+      setLoading(true)
+      const response = await ordenesDeCompraAPI.getAll()
+      // API returns paginated data with content array
+      const ordenesData = response.content || response
+
+      // Fetch details for each order
+      const ordenesConDetalles = await Promise.all(
+        ordenesData.map(async (orden) => {
+          try {
+            const ordenCompleta = await ordenesDeCompraAPI.getById(orden.id)
+            return ordenCompleta
+          } catch (error) {
+            console.error(`Error al cargar orden ${orden.id}:`, error)
+            return orden
+          }
+        }),
+      )
+
+      setOrdenes(ordenesConDetalles)
+    } catch (error) {
+      console.error("Error al cargar órdenes:", error)
+      alert("Error al cargar tus compras")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="mis-compras-container">
+        <p>Cargando tus compras...</p>
+      </div>
+    )
+  }
 
   if (!usuario) {
     return (
       <div className="mis-compras-container">
         <p>Debes iniciar sesión para ver tus compras.</p>
       </div>
-    );
+    )
   }
 
   if (ordenes.length === 0) {
@@ -70,7 +71,7 @@ function MisCompras() {
         <h2>Mis Compras</h2>
         <p className="no-compras">Aún no has realizado ninguna compra.</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -83,9 +84,7 @@ function MisCompras() {
               <div className="orden-info">
                 <h3>Orden #{orden.id}</h3>
                 <p className="orden-fecha">Fecha: {orden.fecha}</p>
-                <span className={`orden-estado ${orden.estado.toLowerCase()}`}>
-                  {orden.estado}
-                </span>
+                <span className={`orden-estado ${orden.estado.toLowerCase()}`}>{orden.estado}</span>
               </div>
               <div className="orden-total">
                 <p className="total-label">Total</p>
@@ -93,35 +92,30 @@ function MisCompras() {
               </div>
             </div>
 
-            <div className="orden-detalles">
-              <h4>Productos:</h4>
-              {orden.detalles.map((detalle) => (
-                <div key={detalle.id} className="detalle-item">
-                  <div className="detalle-info">
-                    <p className="producto-nombre">{detalle.producto.nombre}</p>
-                    <p className="producto-cantidad">
-                      Cantidad: {detalle.cantidad}
-                    </p>
+            {orden.detalles && orden.detalles.length > 0 && (
+              <div className="orden-detalles">
+                <h4>Productos:</h4>
+                {orden.detalles.map((detalle) => (
+                  <div key={detalle.id} className="detalle-item">
+                    <div className="detalle-info">
+                      <p className="producto-nombre">{detalle.producto?.nombre || "Producto"}</p>
+                      <p className="producto-cantidad">Cantidad: {detalle.cantidad}</p>
+                    </div>
+                    <div className="detalle-precio">
+                      <p className="precio-unitario">${detalle.precio_unitario.toLocaleString()} c/u</p>
+                      <p className="subtotal">
+                        Subtotal: ${(detalle.cantidad * detalle.precio_unitario).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                  <div className="detalle-precio">
-                    <p className="precio-unitario">
-                      ${detalle.precio_unitario.toLocaleString()} c/u
-                    </p>
-                    <p className="subtotal">
-                      Subtotal: $
-                      {(
-                        detalle.cantidad * detalle.precio_unitario
-                      ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
-export default MisCompras;
+export default MisCompras
