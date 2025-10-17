@@ -9,6 +9,8 @@ import RegisterProveedorPage from "./pages/login/RegisterProveedorPage"
 import Footer from "./components/footer/Footer"
 import PerfilPage from "./pages/perfil/PerfilPage"
 import ComprasPage from "./pages/compras/ComprasPage"
+import ProveedorPage from "./pages/proveedor/ProveedorPage"
+import DetalleOrdenPage from "./pages/detalleOrden/DetalleOrdenPage"
 
 function App() {
   return (
@@ -23,8 +25,10 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/perfil" element={<PerfilPage />} />
             <Route path="/compras" element={<ComprasPage />} />
+            <Route path="/compras/:id" element={<DetalleOrdenPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/register-proveedor" element={<RegisterProveedorPage />} />
+            <Route path="/proveedor" element={<ProveedorPage />} />
           </Routes>
         </main>
         <Footer />

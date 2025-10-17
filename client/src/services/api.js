@@ -28,19 +28,48 @@ const createHeaders = (includeAuth = true) => {
 
 const handleFetchError = async (response, defaultMessage) => {
   if (!response.ok) {
+    let errorMessage = defaultMessage
+
+    // Try to get error details from response
     try {
-      const errorData = await response.json()
-      throw new Error(errorData.message || defaultMessage)
-    } catch (e) {
-      if (e.message && e.message !== defaultMessage) {
-        throw e
+      const contentType = response.headers.get("content-type")
+
+      // Check if response has JSON content
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text()
+        if (text) {
+          const errorData = JSON.parse(text)
+          errorMessage = errorData.message || errorData.error || defaultMessage
+        }
+      } else {
+        // Try to get text response
+        const text = await response.text()
+        if (text) {
+          errorMessage = text
+        }
       }
-      throw new Error(defaultMessage)
+    } catch (e) {
+      // If parsing fails, use default message
+      console.error("Error parsing error response:", e)
     }
+
+    // Add specific messages for common HTTP status codes
+    if (response.status === 403) {
+      errorMessage = "Acceso denegado. Verifica que tengas permisos o que tu sesión no haya expirado."
+    } else if (response.status === 401) {
+      errorMessage = "No autorizado. Por favor, inicia sesión nuevamente."
+    } else if (response.status === 404) {
+      errorMessage = "Recurso no encontrado."
+    } else if (response.status === 500) {
+      errorMessage = `Error del servidor: ${errorMessage}`
+    }
+
+    throw new Error(errorMessage)
   }
 }
 
 // ============ AUTENTICACIÓN ============
+
 export const authAPI = {
   login: async (email, contrasenia) => {
     try {
@@ -86,49 +115,16 @@ export const authAPI = {
 
   registerProveedor: async (userData) => {
     try {
-      console.log("[v0] Registering proveedor with data:", userData)
       const response = await fetch(`${API_BASE_URL}/auth/register/proveedor`, {
         method: "POST",
         headers: createHeaders(false),
         body: JSON.stringify(userData),
       })
 
-      console.log("[v0] Response status:", response.status)
-      console.log("[v0] Response ok:", response.ok)
-
-      const contentType = response.headers.get("content-type")
-      console.log("[v0] Content-Type:", contentType)
-
-      if (!response.ok) {
-        // Try to get error message from response
-        let errorMessage = "Error al registrar proveedor"
-        try {
-          if (contentType && contentType.includes("application/json")) {
-            const errorData = await response.json()
-            errorMessage = errorData.message || errorMessage
-          } else {
-            const textError = await response.text()
-            console.log("[v0] Error response text:", textError)
-            errorMessage = textError || errorMessage
-          }
-        } catch (e) {
-          console.log("[v0] Could not parse error response:", e)
-        }
-        throw new Error(errorMessage)
-      }
-
-      // Check if response has JSON content
-      if (contentType && contentType.includes("application/json")) {
-        const responseData = await response.json()
-        console.log("[v0] Success response:", responseData)
-        return responseData
-      } else {
-        // If no JSON, return success indicator
-        console.log("[v0] No JSON response, registration might be successful")
-        return { success: true }
-      }
+      await handleFetchError(response, "Error al registrar proveedor")
+      const responseData = await response.json()
+      return responseData
     } catch (error) {
-      console.error("[v0] Registration error:", error)
       if (error.message === "Failed to fetch") {
         throw new Error(
           "No se puede conectar al servidor. Posibles causas:\n1. El backend no está corriendo en http://localhost:4002\n2. El backend no tiene CORS configurado para permitir requests desde http://localhost:5173\n3. Firewall bloqueando la conexión",
@@ -140,6 +136,7 @@ export const authAPI = {
 }
 
 // ============ PRODUCTOS ============
+
 export const productosAPI = {
   getAll: async (page = 0, size = 100) => {
     const response = await fetch(`${API_BASE_URL}/productos?page=${page}&size=${size}`, {
@@ -170,6 +167,7 @@ export const productosAPI = {
 }
 
 // ============ COMPRADORES ============
+
 export const compradoresAPI = {
   getMiCuenta: async (token = null) => {
     const headers = {
@@ -203,6 +201,7 @@ export const compradoresAPI = {
 }
 
 // ============ DIRECCIONES ============
+
 export const direccionesAPI = {
   getAll: async (page = 0, size = 10) => {
     const response = await fetch(`${API_BASE_URL}/direcciones?page=${page}&size=${size}`, {
@@ -247,6 +246,7 @@ export const direccionesAPI = {
 }
 
 // ============ ÓRDENES DE COMPRA ============
+
 export const ordenesDeCompraAPI = {
   getAll: async (page = 0, size = 100) => {
     const response = await fetch(`${API_BASE_URL}/ordenesDeCompra?page=${page}&size=${size}`, {
@@ -289,6 +289,7 @@ export const ordenesDeCompraAPI = {
 }
 
 // ============ DETALLES DE ORDEN ============
+
 export const detallesOrdenAPI = {
   create: async (detalleData) => {
     const response = await fetch(`${API_BASE_URL}/detallesOrdenDeCompra`, {
@@ -303,13 +304,97 @@ export const detallesOrdenAPI = {
 }
 
 // ============ CATEGORÍAS ============
+
 export const categoriasAPI = {
   getAll: async (page = 0, size = 100) => {
     const response = await fetch(`${API_BASE_URL}/categorias?page=${page}&size=${size}`, {
-      headers: createHeaders(false),
+      headers: createHeaders(true),
     })
 
     await handleFetchError(response, "Error al obtener categorías")
     return response.json()
+  },
+}
+
+// ============ PROVEEDORES ============
+
+export const proveedoresAPI = {
+  getMiCuenta: async (token = null) => {
+    const headers = {
+      "Content-Type": "application/json",
+    }
+
+    const authToken = token || getAuthToken()
+    if (authToken) {
+      headers["Authorization"] = `Bearer ${authToken}`
+    }
+
+    const response = await fetch(`${API_BASE_URL}/proveedores/micuenta`, {
+      headers,
+    })
+
+    await handleFetchError(response, "Error al obtener cuenta de proveedor")
+    return response.json()
+  },
+
+  getMisProductos: async (page = 0, size = 100) => {
+    const response = await fetch(`${API_BASE_URL}/productos/misproductos?page=${page}&size=${size}`, {
+      headers: createHeaders(true),
+    })
+
+    await handleFetchError(response, "Error al obtener mis productos")
+    return response.json()
+  },
+
+  createProducto: async (productoData) => {
+    const response = await fetch(`${API_BASE_URL}/productos`, {
+      method: "POST",
+      headers: createHeaders(true),
+      body: JSON.stringify(productoData),
+    })
+
+    await handleFetchError(response, "Error al crear producto")
+
+    // Check if response is successful
+    if (response.ok) {
+      const contentType = response.headers.get("content-type")
+
+      // If response is JSON, parse it
+      if (contentType && contentType.includes("application/json")) {
+        return response.json()
+      }
+
+      // If response is text (like "Producto creado exitosamente"), return a success object
+      const text = await response.text()
+      return {
+        success: true,
+        message: text || "Producto creado exitosamente",
+        id: null, // Backend should ideally return the created product ID
+      }
+    }
+
+    // This shouldn't be reached due to handleFetchError, but just in case
+    throw new Error("Error al crear producto")
+  },
+
+  updateProducto: async (id, productoData) => {
+    const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
+      method: "PUT",
+      headers: createHeaders(true),
+      body: JSON.stringify(productoData),
+    })
+
+    await handleFetchError(response, "Error al actualizar producto")
+    return response.json()
+  },
+
+  deleteProducto: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
+      method: "DELETE",
+      headers: createHeaders(true),
+    })
+
+    await handleFetchError(response, "Error al eliminar producto")
+    return response.ok
   },
 }

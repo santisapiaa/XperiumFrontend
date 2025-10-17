@@ -22,10 +22,14 @@ function Regalospage() {
     const fetchProducts = async () => {
       try {
         const response = await productosAPI.getAll()
-        // API returns paginated data with 'content' array
-        setGifts(response.content || response)
+        const products = (response.content || response).map((product) => ({
+          ...product,
+          imagen_url: product.imagenUrl || product.imagen_url,
+          cant_personas: product.cantPersonas || product.cant_personas,
+        }))
+        setGifts(products)
       } catch (error) {
-        console.error("[v0] Error fetching products:", error)
+        console.error("Error fetching products:", error)
         alert("Error al cargar productos")
       } finally {
         setLoading(false)

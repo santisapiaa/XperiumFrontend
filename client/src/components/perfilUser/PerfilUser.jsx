@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { direccionesAPI } from "../../services/api"
+import { direccionesAPI, compradoresAPI } from "../../services/api"
 import "./PerfilUser.css"
 
 const PerfilUser = () => {
@@ -14,7 +14,14 @@ const PerfilUser = () => {
     calle: "",
     numero: "",
     departamento: "",
-    codigo_postal: "",
+    codigoPostal: "",
+  })
+
+  const [mostrarFormularioPerfil, setMostrarFormularioPerfil] = useState(false)
+  const [formularioPerfil, setFormularioPerfil] = useState({
+    nombre: "",
+    apellido: "",
+    telefono: "",
   })
 
   useEffect(() => {
@@ -45,6 +52,14 @@ const PerfilUser = () => {
     const { name, value } = e.target
     setFormularioDireccion({
       ...formularioDireccion,
+      [name]: value,
+    })
+  }
+
+  const handlePerfilChange = (e) => {
+    const { name, value } = e.target
+    setFormularioPerfil({
+      ...formularioPerfil,
       [name]: value,
     })
   }
@@ -83,6 +98,39 @@ const PerfilUser = () => {
     }
   }
 
+  const guardarPerfil = async (e) => {
+    e.preventDefault()
+
+    if (!formularioPerfil.nombre || !formularioPerfil.apellido) {
+      alert("Por favor, completá los campos obligatorios (Nombre y Apellido).")
+      return
+    }
+
+    try {
+      setLoading(true)
+      // Update user data via API
+      const updatedUser = await compradoresAPI.update(user.id, formularioPerfil)
+
+      const usuarioActualizado = {
+        ...user,
+        nombre: formularioPerfil.nombre,
+        apellido: formularioPerfil.apellido,
+        telefono: formularioPerfil.telefono,
+      }
+      localStorage.setItem("usuarioLogueado", JSON.stringify(usuarioActualizado))
+
+      // Update component state
+      setUser(usuarioActualizado)
+      cerrarFormularioPerfil()
+      alert("Perfil actualizado exitosamente")
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error)
+      alert(error.message || "Error al actualizar el perfil")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const eliminarDireccion = async (direccionId) => {
     if (!confirm("¿Estás seguro de eliminar esta dirección?")) return
 
@@ -105,9 +153,18 @@ const PerfilUser = () => {
       calle: direccion.calle,
       numero: direccion.numero,
       departamento: direccion.departamento,
-      codigo_postal: direccion.codigo_postal,
+      codigoPostal: direccion.codigoPostal || direccion.codigo_postal || "",
     })
     setMostrarFormulario(true)
+  }
+
+  const editarPerfil = () => {
+    setFormularioPerfil({
+      nombre: user.nombre || "",
+      apellido: user.apellido || "",
+      telefono: user.telefono || "",
+    })
+    setMostrarFormularioPerfil(true)
   }
 
   const cerrarFormulario = () => {
@@ -117,7 +174,16 @@ const PerfilUser = () => {
       calle: "",
       numero: "",
       departamento: "",
-      codigo_postal: "",
+      codigoPostal: "",
+    })
+  }
+
+  const cerrarFormularioPerfil = () => {
+    setMostrarFormularioPerfil(false)
+    setFormularioPerfil({
+      nombre: "",
+      apellido: "",
+      telefono: "",
     })
   }
 
@@ -128,7 +194,14 @@ const PerfilUser = () => {
       <section className="perfil-panel perfil-main">
         <div className="perfil-panel-header">
           <h2>Perfil</h2>
-          <a href="#" className="perfil-editar">
+          <a
+            href="#"
+            className="perfil-editar"
+            onClick={(e) => {
+              e.preventDefault()
+              editarPerfil()
+            }}
+          >
             Editar
           </a>
         </div>
@@ -193,7 +266,8 @@ const PerfilUser = () => {
                     {direccion.calle} {direccion.numero}
                     <br />
                     {direccion.departamento}
-                    {direccion.codigo_postal && ` (${direccion.codigo_postal})`}
+                    {(direccion.codigoPostal || direccion.codigo_postal) &&
+                      ` (${direccion.codigoPostal || direccion.codigo_postal})`}
                   </div>
                 </div>
                 <div className="perfil-direccion-acciones">
@@ -213,6 +287,63 @@ const PerfilUser = () => {
           )}
         </div>
       </section>
+
+      {mostrarFormularioPerfil && (
+        <div className="perfil-modal-overlay" onClick={cerrarFormularioPerfil}>
+          <div className="perfil-modal-contenido" onClick={(e) => e.stopPropagation()}>
+            <div className="perfil-modal-header">
+              <h3>Editar perfil</h3>
+              <button className="perfil-modal-cerrar" onClick={cerrarFormularioPerfil}>
+                ×
+              </button>
+            </div>
+            <form onSubmit={guardarPerfil} className="perfil-form-direccion">
+              <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre *"
+                value={formularioPerfil.nombre}
+                onChange={handlePerfilChange}
+                required
+              />
+              <input
+                type="text"
+                name="apellido"
+                placeholder="Apellido *"
+                value={formularioPerfil.apellido}
+                onChange={handlePerfilChange}
+                required
+              />
+              <input
+                type="tel"
+                name="telefono"
+                placeholder="Teléfono"
+                value={formularioPerfil.telefono}
+                onChange={handlePerfilChange}
+              />
+              <div style={{ padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "4px", marginBottom: "12px" }}>
+                <span style={{ fontSize: "12px", color: "#666", display: "block", marginBottom: "4px" }}>
+                  Email (no modificable)
+                </span>
+                <span style={{ fontSize: "14px", color: "#333" }}>{user.email}</span>
+              </div>
+              <div className="perfil-form-acciones">
+                <button
+                  type="button"
+                  className="perfil-btn-cancelar"
+                  onClick={cerrarFormularioPerfil}
+                  disabled={loading}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="perfil-btn-guardar" disabled={loading}>
+                  {loading ? "Guardando..." : "Guardar"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {mostrarFormulario && (
         <div className="perfil-modal-overlay" onClick={cerrarFormulario}>
@@ -252,9 +383,9 @@ const PerfilUser = () => {
               />
               <input
                 type="text"
-                name="codigo_postal"
+                name="codigoPostal"
                 placeholder="Código Postal"
-                value={formularioDireccion.codigo_postal}
+                value={formularioDireccion.codigoPostal}
                 onChange={handleDireccionChange}
               />
               <div className="perfil-form-acciones">

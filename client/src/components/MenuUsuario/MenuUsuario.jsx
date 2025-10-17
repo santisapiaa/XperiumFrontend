@@ -18,7 +18,7 @@ function MenuUsuario({ onClose }) {
   const handleLogout = () => {
     localStorage.removeItem("usuarioLogueado")
     localStorage.removeItem("token")
-    alert("👋 Sesión cerrada correctamente")
+    alert("���� Sesión cerrada correctamente")
     navigate("/login")
     if (onClose) onClose()
   }

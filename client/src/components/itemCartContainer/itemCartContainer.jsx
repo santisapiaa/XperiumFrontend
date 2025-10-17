@@ -4,12 +4,13 @@ import { useContext, useState } from "react"
 import { CartContext } from "../../context/CartContext"
 import { ordenesDeCompraAPI, detallesOrdenAPI } from "../../services/api"
 import ItemCart from "./itemCart"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./ItemCartContainer.css"
 
 const ItemCartContainer = () => {
   const { cartItems, deleteAll, productsLength } = useContext(CartContext)
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const total = cartItems.reduce((previous, current) => previous + Number(current.precio) * Number(current.amount), 0)
 
@@ -18,6 +19,7 @@ const ItemCartContainer = () => {
 
     if (!usuarioLogueado) {
       alert("❌ Debes iniciar sesión para realizar una compra.")
+      navigate("/login")
       return
     }
 
@@ -29,33 +31,29 @@ const ItemCartContainer = () => {
     try {
       setLoading(true)
 
-      // Create order
-      const ordenData = {
-        total: total,
-        estado: "FINALIZADA",
-      }
+      const ordenCreada = await ordenesDeCompraAPI.create({})
 
-      const ordenCreada = await ordenesDeCompraAPI.create(ordenData)
-
-      // Create order details for each product
       for (const item of cartItems) {
         const detalleData = {
-          orden_de_compra_id: ordenCreada.id,
-          producto_id: item.id,
+          ordenDeCompraId: ordenCreada.id,
+          productoId: item.id,
           cantidad: item.amount,
-          precio_unitario: Number(item.precio),
+          precioUnitario: Number(item.precio),
         }
         await detallesOrdenAPI.create(detalleData)
       }
 
+      const ordenFinalizada = await ordenesDeCompraAPI.finalizar(ordenCreada.id)
+
       alert(
-        `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenCreada.id}\nTotal: $${total.toLocaleString()}\nProductos: ${productsLength}`,
+        `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenFinalizada.id}\nTotal: $${ordenFinalizada.total.toLocaleString()}\nProductos: ${productsLength}`,
       )
 
       deleteAll()
+      navigate("/compras")
     } catch (error) {
-      console.error("Error al realizar la compra:", error)
-      alert("❌ Error al procesar la compra. Por favor, intenta nuevamente.")
+      console.error("Error al procesar la compra:", error)
+      alert(`❌ Error al procesar la compra: ${error.message}`)
     } finally {
       setLoading(false)
     }
@@ -67,7 +65,7 @@ const ItemCartContainer = () => {
       {cartItems.length === 0 ? (
         <div className="cart-empty">
           <p>No hay productos agregados.</p>
-          <Link to="/">Ir a la tienda</Link>
+          <Link to="/experiencias">Ir a la tienda</Link>
         </div>
       ) : (
         <div>

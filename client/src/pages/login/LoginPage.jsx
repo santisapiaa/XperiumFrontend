@@ -3,7 +3,7 @@
 import { useState } from "react"
 import "./loginpage.css"
 import { useNavigate } from "react-router-dom"
-import { authAPI, compradoresAPI } from "../../services/api"
+import { authAPI, compradoresAPI, proveedoresAPI } from "../../services/api"
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -24,37 +24,44 @@ function LoginPage() {
     setLoading(true)
 
     try {
-      console.log("[v0] Attempting login with:", loginData.email)
       const loginResponse = await authAPI.login(loginData.email, loginData.contrasenia)
-      console.log("[v0] Login response:", loginResponse)
-
       localStorage.setItem("token", loginResponse.access_token)
 
       try {
         const userData = await compradoresAPI.getMiCuenta(loginResponse.access_token)
-        console.log("[v0] User data from /compradores/micuenta:", userData)
-
         const userToSave = {
           ...userData,
           access_token: loginResponse.access_token,
+          role: "COMPRADOR",
         }
-
         localStorage.setItem("usuarioLogueado", JSON.stringify(userToSave))
         alert(`🎉 Bienvenido ${userData.nombre || "Usuario"}! Has iniciado sesión correctamente.`)
-      } catch (userDataError) {
-        console.log("[v0] Could not fetch from /compradores/micuenta, user might be a provider:", userDataError)
-
-        const minimalUserData = {
-          email: loginData.email,
-          access_token: loginResponse.access_token,
+        navigate("/")
+      } catch (compradorError) {
+        // If comprador fails, try proveedor
+        try {
+          const proveedorData = await proveedoresAPI.getMiCuenta(loginResponse.access_token)
+          const userToSave = {
+            ...proveedorData,
+            access_token: loginResponse.access_token,
+            role: "PROVEEDOR",
+          }
+          localStorage.setItem("usuarioLogueado", JSON.stringify(userToSave))
+          alert(`🎉 Bienvenido ${proveedorData.nombre || "Vendedor"}! Has iniciado sesión correctamente.`)
+          navigate("/proveedor")
+        } catch (proveedorError) {
+          // If both fail, save minimal data
+          const minimalUserData = {
+            email: loginData.email,
+            access_token: loginResponse.access_token,
+          }
+          localStorage.setItem("usuarioLogueado", JSON.stringify(minimalUserData))
+          alert(`🎉 Bienvenido! Has iniciado sesión correctamente.`)
+          navigate("/")
         }
-        localStorage.setItem("usuarioLogueado", JSON.stringify(minimalUserData))
-        alert(`🎉 Bienvenido! Has iniciado sesión correctamente.`)
       }
-
-      navigate("/")
     } catch (error) {
-      console.error("[v0] Login error:", error)
+      console.error("Login error:", error)
 
       if (error.message.includes("CORS") || error.message.includes("conectar al servidor")) {
         alert(
