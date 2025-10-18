@@ -1,0 +1,217 @@
+.detalle-orden-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.detalle-orden-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.btn-volver {
+  align-self: flex-start;
+  padding: 0.75rem 1.5rem;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-volver:hover {
+  background-color: #5568d3;
+}
+
+.detalle-orden-header h1 {
+  font-size: 2rem;
+  color: #333;
+}
+
+.orden-info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.orden-info-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #333;
+}
+
+.orden-estado-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.orden-estado-badge.pendiente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.orden-estado-badge.completada {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.orden-estado-badge.cancelada {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.productos-section {
+  margin-bottom: 2rem;
+}
+
+.productos-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.productos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.producto-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.producto-info {
+  flex: 1;
+}
+
+.producto-nombre {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.producto-descripcion {
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.producto-detalles {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.producto-subtotal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.subtotal-label {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.subtotal-valor {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.no-productos {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.orden-resumen {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.resumen-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
+}
+
+.resumen-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.resumen-linea.total {
+  border-bottom: none;
+  border-top: 2px solid #333;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.total-monto {
+  color: #667eea;
+  font-size: 1.5rem;
+}
+
+.loading-spinner,
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+}
+
+.error-message p {
+  color: #991b1b;
+  font-size: 1.125rem;
+}

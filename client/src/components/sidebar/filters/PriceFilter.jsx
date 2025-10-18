@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-function PriceFilter({ onFilterChange }) {
+function PriceFilter({ onFilterChange, resetKey }) {
   const [isOpen, setIsOpen] = useState(true)
+  const [selectedPrice, setSelectedPrice] = useState(null)
 
   const priceRanges = [
     { label: "Hasta $42.000", range: [0, 42000] },
@@ -12,8 +13,15 @@ function PriceFilter({ onFilterChange }) {
     { label: "Más de $209.000", range: [209000, Number.POSITIVE_INFINITY] },
   ]
 
-  const handlePriceFilter = (range) => {
+  useEffect(() => {
+    if (resetKey > 0) {
+      setSelectedPrice(null)
+    }
+  }, [resetKey])
+
+  const handlePriceFilter = (range, index) => {
     const [min, max] = range
+    setSelectedPrice(index)
     onFilterChange({
       minPrice: min,
       maxPrice: max,
@@ -36,7 +44,12 @@ function PriceFilter({ onFilterChange }) {
         <div className="section-content">
           {priceRanges.map((priceRange, index) => (
             <label key={index}>
-              <input type="radio" name="price" onChange={() => handlePriceFilter(priceRange.range)} />
+              <input
+                type="radio"
+                name="price"
+                checked={selectedPrice === index}
+                onChange={() => handlePriceFilter(priceRange.range, index)}
+              />
               {priceRange.label}
             </label>
           ))}

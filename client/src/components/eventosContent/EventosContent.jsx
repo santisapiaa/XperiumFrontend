@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Card from "../../components/card/Card"
-import Header from "../../components/header/Header"
-import Sidebar from "../../components/sidebar/sidebar"
-import { productosAPI } from "../../services/api"
-import "./Eventospage.css"
+import { useState, useEffect, useMemo } from "react"
+import Card from "../card/Card"
+import Header from "../header/Header"
+import Sidebar from "../sidebar/sidebar"
+import { productosAPI, categoriasAPI } from "../../services/api"
+import "./EventosContent.css"
 
-export default function Eventos() {
+function EventosContent() {
   const [gifts, setGifts] = useState([])
+  const [eventoCategoryId, setEventoCategoryId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
     minPrice: null,
@@ -19,20 +20,43 @@ export default function Eventos() {
   })
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const response = await productosAPI.getAll()
-        const allProducts = response.content || response
-        setGifts(allProducts.filter((p) => p.categoria === "Evento"))
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          productosAPI.getAll(),
+          categoriasAPI.getAll(),
+        ])
+
+        const categories = categoriesResponse.content || categoriesResponse
+        const eventoCategory = categories.find((cat) => cat.descripcion === "Evento")
+
+        if (eventoCategory) {
+          setEventoCategoryId(eventoCategory.id)
+          console.log("[v0] Evento category ID:", eventoCategory.id)
+        }
+
+        const allProducts = productsResponse.content || productsResponse
+        const eventoProducts = eventoCategory
+          ? allProducts
+              .filter((p) => p.categoriaId === eventoCategory.id)
+              .map((product) => ({
+                ...product,
+                imagen_url: product.imagenUrl || product.imagen_url,
+                cant_personas: product.cantPersonas || product.cant_personas,
+              }))
+          : []
+
+        console.log("[v0] Productos de eventos:", eventoProducts)
+        setGifts(eventoProducts)
       } catch (error) {
-        console.error("[v0] Error fetching products:", error)
+        console.error("Error fetching data:", error)
         alert("Error al cargar eventos")
       } finally {
         setLoading(false)
       }
     }
 
-    fetchProducts()
+    fetchData()
   }, [])
 
   const handleFilterChange = (newFilter) => {
@@ -57,10 +81,7 @@ export default function Eventos() {
       return gift.precio >= min && gift.precio <= max
     })()
 
-    const categoryOk = (() => {
-      if (!filters.category) return true
-      return gift.categoria === filters.category
-    })()
+    const categoryOk = true
 
     const locationOk = (() => {
       if (!filters.location) return true
@@ -78,7 +99,9 @@ export default function Eventos() {
     return priceOk && categoryOk && locationOk && peopleOk
   })
 
-  const uniqueCategories = ["Evento"]
+  const uniqueLocations = useMemo(() => {
+    return Array.from(new Set(gifts.map((p) => p.ubicacion))).filter(Boolean)
+  }, [gifts])
 
   if (loading) {
     return (
@@ -97,7 +120,7 @@ export default function Eventos() {
       <div className="gifts-container">
         <Sidebar
           onFilterChange={handleFilterChange}
-          categories={uniqueCategories}
+          locations={uniqueLocations}
           showCategoryFilter={false}
           showPriceFilter={true}
         />
@@ -105,7 +128,7 @@ export default function Eventos() {
           <h2>Eventos</h2>
           <div className="cards-container">
             {filteredGifts.map((gift) => (
-              <Card key={gift.id} {...gift} />
+              <Card key={gift.id} {...gift} descuento={gift.descuento} />
             ))}
           </div>
         </main>
@@ -113,3 +136,5 @@ export default function Eventos() {
     </div>
   )
 }
+
+export default EventosContent

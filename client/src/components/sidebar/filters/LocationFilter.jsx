@@ -1,26 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "../sidebar.css"
 
-function LocationFilter({ onFilterChange }) {
+function LocationFilter({ onFilterChange, locations = [], resetKey }) {
   const [isOpen, setIsOpen] = useState(true)
   const [selectedLocation, setSelectedLocation] = useState(null)
+
+  useEffect(() => {
+    if (resetKey > 0) {
+      setSelectedLocation(null)
+    }
+  }, [resetKey])
 
   const handleLocationChange = (location) => {
     setSelectedLocation(location)
     onFilterChange({ location })
   }
 
-  const locations = [
-    "Todos",
-    "CABA",
-    "Buenos Aires",
-    "Luján, Buenos Aires",
-    "Capilla del Señor, Buenos Aires",
-    "San Isidro, Buenos Aires",
-    "Tigre, Buenos Aires",
-  ]
+  const locationOptions = ["Todos", ...locations]
 
   return (
     <div className="filter-section">
@@ -36,7 +34,7 @@ function LocationFilter({ onFilterChange }) {
       </div>
       {isOpen && (
         <div className="section-content">
-          {locations.map((location) => (
+          {locationOptions.map((location) => (
             <label key={location}>
               <input
                 type="radio"

@@ -1,11 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
-function CategoryFilter({ categories, onFilterChange }) {
+function CategoryFilter({ categories, onFilterChange, resetKey }) {
   const [isOpen, setIsOpen] = useState(true)
+  const [selectedCategory, setSelectedCategory] = useState(null)
+
+  useEffect(() => {
+    if (resetKey > 0) {
+      setSelectedCategory(null)
+    }
+  }, [resetKey])
 
   const handleCategoryFilter = (category) => {
+    setSelectedCategory(category)
     onFilterChange({ category })
   }
 
@@ -25,7 +33,12 @@ function CategoryFilter({ categories, onFilterChange }) {
         <div className="section-content">
           {categories.map((category, index) => (
             <label key={index}>
-              <input type="radio" name="category" onChange={() => handleCategoryFilter(category)} />
+              <input
+                type="radio"
+                name="category"
+                checked={selectedCategory === category}
+                onChange={() => handleCategoryFilter(category)}
+              />
               {category}
             </label>
           ))}

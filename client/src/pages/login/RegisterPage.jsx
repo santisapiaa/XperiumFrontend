@@ -1,7 +1,11 @@
-import Register from "../../components/register/Register";
+import Register from "../../components/register/Register"
 
 function RegisterPage() {
-  return <Register />;
+  return (
+    <div className="page-container">
+      <Register />
+    </div>
+  )
 }
 
-export default RegisterPage;
+export default RegisterPage

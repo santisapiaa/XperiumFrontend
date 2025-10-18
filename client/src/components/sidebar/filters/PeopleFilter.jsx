@@ -1,11 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "../sidebar.css"
 
-function PeopleFilter({ onFilterChange }) {
+function PeopleFilter({ onFilterChange, resetKey }) {
   const [isOpen, setIsOpen] = useState(true)
   const [selectedPeople, setSelectedPeople] = useState(null)
+
+  useEffect(() => {
+    if (resetKey > 0) {
+      setSelectedPeople(null)
+    }
+  }, [resetKey])
 
   const handlePeopleChange = (people) => {
     setSelectedPeople(people)

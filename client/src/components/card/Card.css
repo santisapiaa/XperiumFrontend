@@ -7,10 +7,25 @@
   transition: transform 0.2s ease;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .card:hover {
   transform: scale(1.03);
+}
+
+/* Added discount badge styling */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #dc2626;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  z-index: 10;
 }
 
 .card img {
@@ -45,6 +60,19 @@
   align-items: center;
   margin-top: auto;
   gap: 0.5rem;
+}
+
+/* Added price container for discount display */
+.precio-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.precio-original {
+  font-size: 0.875rem;
+  color: #888;
+  text-decoration: line-through;
 }
 
 .precio {

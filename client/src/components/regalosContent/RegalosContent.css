@@ -1,0 +1,28 @@
+.regalospage {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.gifts-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.gifts-main {
+  flex: 1;
+}
+
+.gifts-main h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
