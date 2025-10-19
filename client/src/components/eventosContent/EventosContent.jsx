@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import { useSearchParams } from "react-router-dom"
 import Card from "../card/Card"
 import Header from "../header/Header"
 import Sidebar from "../sidebar/sidebar"
@@ -8,6 +9,9 @@ import { productosAPI, categoriasAPI } from "../../services/api"
 import "./EventosContent.css"
 
 function EventosContent() {
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get("search") || ""
+
   const [gifts, setGifts] = useState([])
   const [eventoCategoryId, setEventoCategoryId] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -32,7 +36,6 @@ function EventosContent() {
 
         if (eventoCategory) {
           setEventoCategoryId(eventoCategory.id)
-          console.log("[v0] Evento category ID:", eventoCategory.id)
         }
 
         const allProducts = productsResponse.content || productsResponse
@@ -46,7 +49,6 @@ function EventosContent() {
               }))
           : []
 
-        console.log("[v0] Productos de eventos:", eventoProducts)
         setGifts(eventoProducts)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -74,6 +76,15 @@ function EventosContent() {
   }
 
   const filteredGifts = gifts.filter((gift) => {
+    // Search filter
+    const searchOk = (() => {
+      if (!searchQuery) return true
+      const query = searchQuery.toLowerCase()
+      const nameMatch = gift.nombre?.toLowerCase().includes(query)
+      const descMatch = gift.descripcion?.toLowerCase().includes(query)
+      return nameMatch || descMatch
+    })()
+
     const priceOk = (() => {
       if (filters.minPrice == null && filters.maxPrice == null) return true
       const min = filters.minPrice ?? Number.NEGATIVE_INFINITY
@@ -96,7 +107,7 @@ function EventosContent() {
       return gift.cant_personas === filters.people
     })()
 
-    return priceOk && categoryOk && locationOk && peopleOk
+    return searchOk && priceOk && categoryOk && locationOk && peopleOk
   })
 
   const uniqueLocations = useMemo(() => {
@@ -125,11 +136,15 @@ function EventosContent() {
           showPriceFilter={true}
         />
         <main className="gifts-main">
-          <h2>Eventos</h2>
+          {searchQuery ? <h2>Resultados para: "{searchQuery}"</h2> : <h2>Eventos</h2>}
           <div className="cards-container">
-            {filteredGifts.map((gift) => (
-              <Card key={gift.id} {...gift} descuento={gift.descuento} />
-            ))}
+            {filteredGifts.length > 0 ? (
+              filteredGifts.map((gift) => <Card key={gift.id} {...gift} descuento={gift.descuento} />)
+            ) : (
+              <p style={{ textAlign: "center", width: "100%", padding: "2rem" }}>
+                No se encontraron resultados para tu búsqueda.
+              </p>
+            )}
           </div>
         </main>
       </div>

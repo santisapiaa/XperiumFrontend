@@ -29,6 +29,8 @@ body {
   align-items: stretch;
   min-width: 320px;
   min-height: 100vh;
+  /* Prevent horizontal scrollbar from appearing */
+  overflow-x: hidden;
 }
 
 h1 {
@@ -73,4 +75,6 @@ button:focus-visible {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Ensure page container doesn't overflow */
+  overflow-x: hidden;
 }

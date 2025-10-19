@@ -308,7 +308,7 @@ export const detallesOrdenAPI = {
 export const categoriasAPI = {
   getAll: async (page = 0, size = 100) => {
     const response = await fetch(`${API_BASE_URL}/categorias?page=${page}&size=${size}`, {
-      headers: createHeaders(true),
+      headers: createHeaders(false),
     })
 
     await handleFetchError(response, "Error al obtener categorías")

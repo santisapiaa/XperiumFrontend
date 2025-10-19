@@ -332,3 +332,27 @@
 .cancel-btn:hover {
   opacity: 0.9;
 }
+
+/* Added styles for real-time price preview in form */
+.precio-preview {
+  background-color: #f3f4f6;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+}
+
+.precio-preview p {
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.precio-preview .precio-final {
+  font-size: 1.1rem;
+  color: #667eea;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #d1d5db;
+}

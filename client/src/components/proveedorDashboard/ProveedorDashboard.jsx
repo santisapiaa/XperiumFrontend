@@ -113,7 +113,18 @@ function ProveedorDashboard() {
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
+
+  const calculateFinalPrice = () => {
+    const precio = Number.parseFloat(formData.precio) || 0
+    const descuento = Number.parseInt(formData.descuento) || 0
+
+    if (descuento > 0 && descuento <= 100) {
+      return precio * (1 - descuento / 100)
+    }
+    return precio
   }
 
   const handleSubmit = async (e) => {
@@ -305,6 +316,27 @@ function ProveedorDashboard() {
                 max="100"
                 required
               />
+              {formData.precio && formData.descuento > 0 && (
+                <div className="precio-preview">
+                  <p>
+                    <strong>Precio base:</strong> $
+                    {Number.parseFloat(formData.precio).toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                  <p>
+                    <strong>Descuento:</strong> {formData.descuento}%
+                  </p>
+                  <p className="precio-final">
+                    <strong>Precio final:</strong> $
+                    {calculateFinalPrice().toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+              )}
               <select name="estado" value={formData.estado} onChange={handleChange} required>
                 <option value="DISPONIBLE">Disponible</option>
                 <option value="NO_DISPONIBLE">No Disponible</option>

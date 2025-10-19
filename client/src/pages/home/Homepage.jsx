@@ -1,16 +1,21 @@
 import Header from "../../components/header/Header"
-import Carousel from "../../components/carousel/Carousel"
+import HeroSection from "../../components/HeroSection/HeroSection"
+import CategoryCarousel from "../../components/CategoryCarousel/CategoryCarousel"
+import FeaturedExperiences from "../../components/FeaturedExperiences/FeaturedExperiences"
+import BenefitsSection from "../../components/BenefitsSection/BenefitsSection"
 import "./Homepage.css"
-import UsuarioLogueado from "../../components/UsuarioLogueado/UsuarioLogueado"
 
 function Homepage() {
   return (
-    <div className="page-container">
-      <UsuarioLogueado />
+    <div className="homepage">
       <Header />
-      <Carousel />
+      <HeroSection />
+      <CategoryCarousel />
+      <FeaturedExperiences />
+      <BenefitsSection />
     </div>
   )
 }
 
 export default Homepage
+

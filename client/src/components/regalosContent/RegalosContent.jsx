@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
+import { useSearchParams } from "react-router-dom"
 import Card from "../card/Card"
 import Header from "../header/Header"
 import Sidebar from "../sidebar/sidebar"
@@ -8,6 +9,10 @@ import { productosAPI, categoriasAPI } from "../../services/api"
 import "./RegalosContent.css"
 
 function RegalosContent() {
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get("search") || ""
+  const categoryParam = searchParams.get("categoria") || ""
+
   const [gifts, setGifts] = useState([])
   const [categoriesMap, setCategoriesMap] = useState({})
   const [loading, setLoading] = useState(true)
@@ -33,16 +38,17 @@ function RegalosContent() {
           catMap[cat.id] = cat.descripcion
         })
         setCategoriesMap(catMap)
-        console.log("[v0] Mapa de categorías:", catMap)
 
         const products = (productsResponse.content || productsResponse).map((product) => ({
           ...product,
           imagen_url: product.imagenUrl || product.imagen_url,
           cant_personas: product.cantPersonas || product.cant_personas,
         }))
-        console.log("[v0] Productos cargados:", products)
-        console.log("[v0] Cantidad de productos:", products.length)
         setGifts(products)
+
+        if (categoryParam) {
+          setFilters((prev) => ({ ...prev, category: decodeURIComponent(categoryParam) }))
+        }
       } catch (error) {
         console.error("Error fetching data:", error)
         alert("Error al cargar productos")
@@ -52,18 +58,15 @@ function RegalosContent() {
     }
 
     fetchData()
-  }, [])
+  }, [categoryParam])
 
   const uniqueCategories = useMemo(() => {
     const categories = Array.from(new Set(gifts.map((p) => categoriesMap[p.categoriaId]).filter(Boolean)))
-    console.log("[v0] Categorías únicas calculadas:", categories)
-    console.log("[v0] Cantidad de categorías:", categories.length)
     return categories
   }, [gifts, categoriesMap])
 
   const uniqueLocations = useMemo(() => {
     const locations = Array.from(new Set(gifts.map((p) => p.ubicacion))).filter(Boolean)
-    console.log("[v0] Ubicaciones únicas calculadas:", locations)
     return locations
   }, [gifts])
 
@@ -82,6 +85,14 @@ function RegalosContent() {
   }
 
   const filteredGifts = gifts.filter((gift) => {
+    const searchOk = (() => {
+      if (!searchQuery) return true
+      const query = searchQuery.toLowerCase()
+      const nameMatch = gift.nombre?.toLowerCase().includes(query)
+      const descMatch = gift.descripcion?.toLowerCase().includes(query)
+      return nameMatch || descMatch
+    })()
+
     const priceOk = (() => {
       if (filters.minPrice == null && filters.maxPrice == null) return true
       const min = filters.minPrice ?? Number.NEGATIVE_INFINITY
@@ -107,7 +118,7 @@ function RegalosContent() {
       return gift.cant_personas === filters.people
     })()
 
-    return priceOk && categoryOk && locationOk && peopleOk
+    return searchOk && priceOk && categoryOk && locationOk && peopleOk
   })
 
   if (loading) {
@@ -133,11 +144,21 @@ function RegalosContent() {
           showPriceFilter={true}
         />
         <main className="gifts-main">
-          <h2>Regalos con Opciones</h2>
+          {searchQuery ? (
+            <h2>Resultados para: "{searchQuery}"</h2>
+          ) : categoryParam ? (
+            <h2>Categoría: {decodeURIComponent(categoryParam)}</h2>
+          ) : (
+            <h2>Regalos con Opciones</h2>
+          )}
           <div className="cards-container">
-            {filteredGifts.map((gift) => (
-              <Card key={gift.id} {...gift} descuento={gift.descuento} />
-            ))}
+            {filteredGifts.length > 0 ? (
+              filteredGifts.map((gift) => <Card key={gift.id} {...gift} descuento={gift.descuento} />)
+            ) : (
+              <p style={{ textAlign: "center", width: "100%", padding: "2rem" }}>
+                No se encontraron resultados para tu búsqueda.
+              </p>
+            )}
           </div>
         </main>
       </div>

@@ -1,13 +1,29 @@
 "use client"
 import { Link, useNavigate } from "react-router-dom"
+import { useState } from "react"
 import "./Header.css"
 import User from "../user/user"
 import CartWidget from "../cartwidget/cartWidget"
 
 function Header() {
   const navigate = useNavigate()
+  const [searchQuery, setSearchQuery] = useState("")
+
   const goHome = () => {
     navigate("/")
+  }
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/experiencias?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e)
+    }
   }
 
   return (
@@ -23,7 +39,13 @@ function Header() {
       </nav>
 
       <div className="actions">
-        <input type="text" placeholder="Buscar experiencias..." />
+        <input
+          type="text"
+          placeholder="Buscar experiencias..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
         <button className="btn-regalo">Abrir regalo</button>
       </div>
       <div className="actions">
