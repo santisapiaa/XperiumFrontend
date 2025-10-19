@@ -121,6 +121,10 @@
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
+  /* Added flex layout and min-height to prevent content cutoff */
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
 }
 
 .producto-card:hover {
@@ -136,12 +140,20 @@
 
 .producto-info {
   padding: 1.5rem;
+  /* Added flex layout to properly space content */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .producto-info h3 {
   font-size: 1.25rem;
   margin-bottom: 0.5rem;
   color: #333;
+  /* Allow title to wrap to multiple lines */
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .producto-descripcion {
@@ -149,6 +161,12 @@
   margin-bottom: 1rem;
   font-size: 0.875rem;
   line-height: 1.5;
+  /* Limit description to 3 lines with ellipsis */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Added styles for discount display in dashboard */
@@ -191,6 +209,9 @@
   display: flex;
   gap: 0.75rem;
   margin-top: 1rem;
+  /* Push buttons to bottom of card */
+  margin-top: auto;
+  padding-top: 1rem;
 }
 
 .edit-btn,
@@ -202,6 +223,9 @@
   cursor: pointer;
   font-weight: 600;
   transition: opacity 0.3s;
+  /* Ensure buttons have minimum height and don't shrink */
+  min-height: 40px;
+  flex-shrink: 0;
 }
 
 .edit-btn {

@@ -13,6 +13,7 @@ function ProveedorDashboard() {
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
+  const [originalPrice, setOriginalPrice] = useState(null)
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -77,6 +78,9 @@ function ProveedorDashboard() {
   const handleOpenModal = (producto = null) => {
     if (producto) {
       setEditingProduct(producto)
+      const precioOriginal = producto.descuento > 0 ? producto.precio / (1 - producto.descuento / 100) : producto.precio
+      setOriginalPrice(precioOriginal)
+
       setFormData({
         nombre: producto.nombre,
         descripcion: producto.descripcion,
@@ -91,6 +95,7 @@ function ProveedorDashboard() {
       })
     } else {
       setEditingProduct(null)
+      setOriginalPrice(null)
       setFormData({
         nombre: "",
         descripcion: "",
@@ -114,6 +119,20 @@ function ProveedorDashboard() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
+
+    if (name === "descuento") {
+      const newDescuento = Number.parseInt(value) || 0
+
+      if (newDescuento === 0 && originalPrice !== null) {
+        setFormData({ ...formData, [name]: value, precio: originalPrice.toString() })
+        return
+      }
+    }
+
+    if (name === "precio" && originalPrice === null && value) {
+      setOriginalPrice(Number.parseFloat(value))
+    }
+
     setFormData({ ...formData, [name]: value })
   }
 

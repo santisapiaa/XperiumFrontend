@@ -276,16 +276,6 @@ export const ordenesDeCompraAPI = {
     await handleFetchError(response, "Error al crear orden")
     return response.json()
   },
-
-  finalizar: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/ordenesDeCompra/${id}/finalizar`, {
-      method: "PUT",
-      headers: createHeaders(true),
-    })
-
-    await handleFetchError(response, "Error al finalizar orden")
-    return response.json()
-  },
 }
 
 // ============ DETALLES DE ORDEN ============

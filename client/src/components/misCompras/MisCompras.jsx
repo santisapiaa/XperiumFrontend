@@ -29,9 +29,7 @@ function MisCompras() {
 
       const ordenesData = response.content || response
 
-      const ordenesFiltradas = ordenesData
-        .filter((orden) => orden.estado === "FINALIZADA")
-        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+      const ordenesFiltradas = ordenesData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
 
       setOrdenes(ordenesFiltradas)
     } catch (error) {
@@ -43,14 +41,10 @@ function MisCompras() {
   }
 
   const formatearFecha = (fechaString) => {
-    const fecha = new Date(fechaString)
-    return fecha.toLocaleDateString("es-AR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+    // fechaString comes as "YYYY-MM-DD" from LocalDate in backend
+    // Split and reformat to "DD/MM/YYYY" without using Date object to avoid timezone issues
+    const [year, month, day] = fechaString.split("-")
+    return `${day}/${month}/${year}`
   }
 
   const verDetalle = (ordenId) => {
@@ -102,7 +96,6 @@ function MisCompras() {
                 <div className="orden-info">
                   <h3>Orden #{orden.id}</h3>
                   <p className="orden-fecha">{formatearFecha(orden.fecha)}</p>
-                  <span className={`orden-estado ${orden.estado.toLowerCase()}`}>{orden.estado}</span>
                 </div>
                 <div className="orden-total">
                   <p className="total-label">Total</p>

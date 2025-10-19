@@ -43,10 +43,10 @@ const ItemCartContainer = () => {
         await detallesOrdenAPI.create(detalleData)
       }
 
-      const ordenFinalizada = await ordenesDeCompraAPI.finalizar(ordenCreada.id)
+      const ordenFinal = await ordenesDeCompraAPI.getById(ordenCreada.id)
 
       alert(
-        `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenFinalizada.id}\nTotal: $${ordenFinalizada.total.toLocaleString()}\nProductos: ${productsLength}`,
+        `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenFinal.id}\nTotal: $${ordenFinal.total.toLocaleString()}\nProductos: ${productsLength}`,
       )
 
       deleteAll()

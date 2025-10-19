@@ -27,6 +27,7 @@ function Header() {
   }
 
   return (
+    
     <header className="header">
       <div className="logo" onClick={goHome}>
         Xperium
@@ -48,6 +49,7 @@ function Header() {
         />
         <button className="btn-regalo">Abrir regalo</button>
       </div>
+      
       <div className="actions">
         <User />
         <Link to="/carrito">

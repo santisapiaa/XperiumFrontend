@@ -36,14 +36,10 @@ function DetalleOrden() {
   }
 
   const formatearFecha = (fechaString) => {
-    const fecha = new Date(fechaString)
-    return fecha.toLocaleDateString("es-AR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+    // fechaString comes as "YYYY-MM-DD" from LocalDate in backend
+    // Split and reformat to "DD/MM/YYYY" without using Date object to avoid timezone issues
+    const [year, month, day] = fechaString.split("-")
+    return `${day}/${month}/${year}`
   }
 
   const calcularSubtotal = (detalle) => {
@@ -105,10 +101,6 @@ function DetalleOrden() {
             <span className="info-label">Fecha de compra:</span>
             <span className="info-value">{formatearFecha(orden.fecha)}</span>
           </div>
-          <div className="info-item">
-            <span className="info-label">Estado:</span>
-            <span className={`orden-estado-badge ${orden.estado.toLowerCase()}`}>{orden.estado}</span>
-          </div>
         </div>
       </div>
 
@@ -118,23 +110,32 @@ function DetalleOrden() {
           <div className="productos-lista">
             {detalles.map((detalle, index) => (
               <div key={detalle.id || index} className="producto-card">
-                <div className="producto-info">
-                  <h3 className="producto-nombre">
-                    {detalle.producto?.nombre || detalle.productoNombre || "Producto"}
-                  </h3>
-                  {detalle.producto?.descripcion && (
-                    <p className="producto-descripcion">{detalle.producto.descripcion}</p>
+                <div className="producto-left-container">
+                  {detalle.producto?.imagenUrl && (
+                    <div className="producto-imagen">
+                      <img
+                        src={detalle.producto.imagenUrl || "/placeholder.svg"}
+                        alt={detalle.producto.nombre || "Producto"}
+                      />
+                    </div>
                   )}
-                  <div className="producto-detalles">
+                  <div className="producto-info">
+                    <h3>
+                      {detalle.producto?.nombre || detalle.productoNombre || "Producto"}
+                    </h3>
                     <span className="detalle-cantidad">Cantidad: {detalle.cantidad}</span>
                     <span className="detalle-precio">
                       Precio unitario: ${(detalle.precio_unitario || detalle.precioUnitario || 0).toLocaleString()}
                     </span>
                   </div>
+                 
                 </div>
-                <div className="producto-subtotal">
-                  <span className="subtotal-label">Subtotal</span>
-                  <span className="subtotal-valor">${calcularSubtotal(detalle).toLocaleString()}</span>
+                <div className="producto-precio-container">
+                  
+                  <div className="subtotal-section">
+                    <span className="subtotal-label">Subtotal</span>
+                    <span className="subtotal-valor">${calcularSubtotal(detalle).toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
             ))}

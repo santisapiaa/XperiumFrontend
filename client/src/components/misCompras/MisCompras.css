@@ -86,29 +86,7 @@
   font-size: 0.95rem;
 }
 
-.orden-estado {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-top: 8px;
-}
-
-.orden-estado.finalizada {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.orden-estado.pendiente {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.orden-estado.cancelada {
-  background-color: #f8d7da;
-  color: #721c24;
-}
+/* Removed estado-related styles - orders no longer have states */
 
 .orden-total {
   text-align: right;

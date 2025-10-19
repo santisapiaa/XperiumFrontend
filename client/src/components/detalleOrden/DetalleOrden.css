@@ -1,5 +1,5 @@
 .detalle-orden-container {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -63,29 +63,6 @@
   color: #333;
 }
 
-.orden-estado-badge {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.orden-estado-badge.pendiente {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.orden-estado-badge.completada {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.orden-estado-badge.cancelada {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
-
 .productos-section {
   margin-bottom: 2rem;
 }
@@ -108,38 +85,73 @@
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  min-height: fit-content;
+}
+
+.producto-left-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+  height: auto;
   gap: 1rem;
+}
+
+.producto-imagen {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.producto-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .producto-info {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .producto-nombre {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
   color: #333;
+  font-weight: 600;
+  margin: 0;
 }
 
-.producto-descripcion {
-  color: #666;
-  margin-bottom: 0.75rem;
+.producto-precio-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+  width: 100%;
 }
 
 .producto-detalles {
   display: flex;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 0.25rem;
   font-size: 0.875rem;
   color: #666;
+  text-align: right;
 }
 
-.producto-subtotal {
+.subtotal-section {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
 }
 
 .subtotal-label {
@@ -148,7 +160,7 @@
 }
 
 .subtotal-valor {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: #667eea;
 }
@@ -176,7 +188,6 @@
 
 .resumen-card h3 {
   font-size: 1.25rem;
-  margin-bottom: 1rem;
   color: #333;
 }
 
@@ -214,4 +225,36 @@
 .error-message p {
   color: #991b1b;
   font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+  .producto-card {
+    flex-direction: column;
+    max-width: 100%;
+    align-items: stretch;
+  }
+
+  .producto-left-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .producto-imagen {
+    width: 100%;
+    height: 150px;
+  }
+
+  .producto-precio-container {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .producto-detalles {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .subtotal-section {
+    align-items: flex-start;
+  }
 }
