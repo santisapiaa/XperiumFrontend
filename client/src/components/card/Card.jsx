@@ -12,7 +12,6 @@ function Card({ id, nombre, descripcion, precio, imagen_url, ubicacion, cant_per
   const precioOriginal = descuento > 0 ? precio / (1 - descuento / 100) : null
 
   const handleCardClick = (e) => {
-    // Don't navigate if clicking the add to cart button
     if (e.target.closest(".btn-agregar-al-carrito")) {
       return
     }

@@ -1,9 +1,8 @@
-/* Fondo general */
 .login-container {
   background-color: #1e1e1e;
   color: #fff;
-  height: calc(100vh - 80px); /* 🔧 resta la altura del header */
-  width: 100vw; /* ✅ ocupa todo el ancho de la ventana */
+  height: calc(100vh - 80px);
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,7 +11,6 @@
   box-sizing: border-box;
 }
 
-/* Caja del formulario */
 .login-box {
   background-color: #2a2a2a;
   padding: 40px 50px;
@@ -23,7 +21,6 @@
   max-width: 380px;
 }
 
-/* Título */
 .login-box h1 {
   margin-bottom: 25px;
   font-size: 28px;
@@ -31,7 +28,6 @@
   color: #fff;
 }
 
-/* Inputs */
 .login-form input {
   display: block;
   width: 100%;
@@ -49,7 +45,6 @@
   color: #aaa;
 }
 
-/* Botón */
 .login-form button {
   width: 100%;
   padding: 10px;
@@ -64,10 +59,9 @@
 }
 
 .login-form button:hover {
-  background-color: #4b0082; /* violeta estilo eXperium */
+  background-color: #4b0082;
 }
 
-/* Footer */
 .login-footer {
   margin-top: 20px;
   font-size: 14px;

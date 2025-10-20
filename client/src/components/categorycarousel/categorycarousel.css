@@ -25,7 +25,6 @@
   position: relative;
   max-width: 1400px;
   margin: 0 auto;
-  /* Add padding to accommodate scroll buttons without causing overflow */
   padding: 0 60px;
 }
 
@@ -123,12 +122,10 @@
 }
 
 .category-scroll-btn.left {
-  /* Position buttons inside the wrapper to prevent overflow */
   left: 0;
 }
 
 .category-scroll-btn.right {
-  /* Position buttons inside the wrapper to prevent overflow */
   right: 0;
 }
 
@@ -149,7 +146,6 @@
     display: none;
   }
 
-  /* Remove extra padding on mobile since buttons are hidden */
   .category-carousel-wrapper {
     padding: 0;
   }

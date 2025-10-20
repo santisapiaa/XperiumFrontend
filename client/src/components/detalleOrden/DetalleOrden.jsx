@@ -36,8 +36,6 @@ function DetalleOrden() {
   }
 
   const formatearFecha = (fechaString) => {
-    // fechaString comes as "YYYY-MM-DD" from LocalDate in backend
-    // Split and reformat to "DD/MM/YYYY" without using Date object to avoid timezone issues
     const [year, month, day] = fechaString.split("-")
     return `${day}/${month}/${year}`
   }

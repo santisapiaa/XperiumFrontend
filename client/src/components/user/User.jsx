@@ -10,7 +10,7 @@ const User = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    setMenuVisible((prev) => !prev); // Alterna visibilidad del menú
+    setMenuVisible((prev) => !prev);
   };
 
   return (

@@ -7,7 +7,6 @@ function UsuarioLogueado() {
   const [usuario, setUsuario] = useState(null)
   const navigate = useNavigate()
 
-  // Al cargar el componente, leemos el usuario guardado
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem("usuarioLogueado")
     if (usuarioGuardado) {
@@ -16,17 +15,14 @@ function UsuarioLogueado() {
     }
   }, [])
 
-  // Si no hay usuario logueado, no mostramos nada
   if (!usuario) return null
 
-  // Función para cerrar sesión
   const handleLogout = () => {
     localStorage.removeItem("usuarioLogueado")
     alert("👋 Sesión cerrada correctamente")
-    navigate("/login") // vuelve al login
+    navigate("/login")
   }
 
-  // Renderizamos el saludo y el botón de cerrar sesión
   return (
     <div
       style={{

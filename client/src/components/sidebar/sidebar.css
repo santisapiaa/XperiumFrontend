@@ -7,7 +7,7 @@
   height: 100%;
   min-height: 100vh;
   overflow-y: auto;
-  flex-shrink: 0; /* Evita que se comprima */
+  flex-shrink: 0;
   box-sizing: border-box;
   position: relative;
 }
@@ -62,7 +62,7 @@
   flex-direction: column;
   gap: 0.4rem;
   padding-left: 0.5rem;
-  max-height: 200px; /* Limita altura para mejor UX */
+  max-height: 200px;
   overflow-y: auto;
 }
 
@@ -90,7 +90,6 @@ input[type="radio"] {
   margin: 0;
 }
 
-/* Responsive para mobile */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -98,6 +97,6 @@ input[type="radio"] {
     min-height: auto;
     border-right: none;
     border-bottom: 1px solid #e6e6e6;
-    order: 1; /* Va después del contenido principal */
+    order: 1;
   }
 }

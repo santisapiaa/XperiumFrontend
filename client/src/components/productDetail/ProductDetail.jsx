@@ -26,7 +26,6 @@ function ProductDetail() {
     const fetchProduct = async () => {
       try {
         const data = await productosAPI.getById(id)
-        // Normalize field names
         const normalizedProduct = {
           ...data,
           imagen_url: data.imagenUrl || data.imagen_url,

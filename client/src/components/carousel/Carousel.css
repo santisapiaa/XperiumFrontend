@@ -65,6 +65,6 @@
 .next:focus,
 .prev:active,
 .next:active {
-  outline: none; /* Elimina el óvalo al hacer clic o enfocar */
-  box-shadow: none; /* Elimina cualquier sombra residual */
+  outline: none;
+  box-shadow: none;
 }

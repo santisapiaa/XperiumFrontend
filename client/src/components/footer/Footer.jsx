@@ -4,7 +4,7 @@ import "./Footer.css";
 function Footer() {
   return (
     <footer className="footer">
-      © 2025 Xperium — Hecho con React + CSS
+      © 2025 Xperium
     </footer>
   );
 }

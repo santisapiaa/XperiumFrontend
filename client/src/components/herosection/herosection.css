@@ -5,7 +5,6 @@
   padding: 80px 40px 60px;
   position: relative;
   overflow: hidden;
-  /* Ensure content doesn't overflow horizontally */
   box-sizing: border-box;
 }
 

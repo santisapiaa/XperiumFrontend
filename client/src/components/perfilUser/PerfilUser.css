@@ -80,7 +80,6 @@
   min-width: 260px;
 }
 
-/* Estilos para direcciones */
 .perfil-sin-direcciones {
   color: #888;
   font-style: italic;
@@ -162,7 +161,6 @@
   font-size: 1rem;
 }
 
-/* Estilos para el modal de dirección */
 .perfil-modal-overlay {
   position: fixed;
   top: 0;

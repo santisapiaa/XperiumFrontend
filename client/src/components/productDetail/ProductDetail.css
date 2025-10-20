@@ -257,7 +257,6 @@
   color: black;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .product-detail-content {
     grid-template-columns: 1fr;

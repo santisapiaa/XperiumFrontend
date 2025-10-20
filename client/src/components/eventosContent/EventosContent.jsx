@@ -76,7 +76,6 @@ function EventosContent() {
   }
 
   const filteredGifts = gifts.filter((gift) => {
-    // Search filter
     const searchOk = (() => {
       if (!searchQuery) return true
       const query = searchQuery.toLowerCase()

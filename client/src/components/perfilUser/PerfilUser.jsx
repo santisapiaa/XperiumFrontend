@@ -38,7 +38,6 @@ const PerfilUser = () => {
     try {
       setLoading(true)
       const response = await direccionesAPI.getAll()
-      // API returns paginated data
       setDirecciones(response.content || response)
     } catch (error) {
       console.error("Error al cargar direcciones:", error)
@@ -72,7 +71,6 @@ const PerfilUser = () => {
       return
     }
 
-    // Verificar límite de 2 direcciones
     if (!direccionEditando && direcciones.length >= 2) {
       alert("Solo podés tener un máximo de 2 direcciones.")
       return
@@ -81,10 +79,8 @@ const PerfilUser = () => {
     try {
       setLoading(true)
       if (direccionEditando) {
-        // Editar dirección existente
         await direccionesAPI.update(direccionEditando.id, formularioDireccion)
       } else {
-        // Crear nueva dirección
         await direccionesAPI.create(formularioDireccion)
       }
       await cargarDirecciones()
@@ -108,7 +104,6 @@ const PerfilUser = () => {
 
     try {
       setLoading(true)
-      // Update user data via API
       const updatedUser = await compradoresAPI.update(user.id, formularioPerfil)
 
       const usuarioActualizado = {
@@ -119,7 +114,6 @@ const PerfilUser = () => {
       }
       localStorage.setItem("usuarioLogueado", JSON.stringify(usuarioActualizado))
 
-      // Update component state
       setUser(usuarioActualizado)
       cerrarFormularioPerfil()
       alert("Perfil actualizado exitosamente")

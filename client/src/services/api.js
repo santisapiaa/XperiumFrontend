@@ -1,6 +1,5 @@
 const API_BASE_URL = "/api"
 
-// Helper function to get auth token
 const getAuthToken = () => {
   const usuario = localStorage.getItem("usuarioLogueado")
   if (usuario) {
@@ -10,7 +9,6 @@ const getAuthToken = () => {
   return null
 }
 
-// Helper function to create headers
 const createHeaders = (includeAuth = true) => {
   const headers = {
     "Content-Type": "application/json",
@@ -30,11 +28,9 @@ const handleFetchError = async (response, defaultMessage) => {
   if (!response.ok) {
     let errorMessage = defaultMessage
 
-    // Try to get error details from response
     try {
       const contentType = response.headers.get("content-type")
 
-      // Check if response has JSON content
       if (contentType && contentType.includes("application/json")) {
         const text = await response.text()
         if (text) {
@@ -42,18 +38,15 @@ const handleFetchError = async (response, defaultMessage) => {
           errorMessage = errorData.message || errorData.error || defaultMessage
         }
       } else {
-        // Try to get text response
         const text = await response.text()
         if (text) {
           errorMessage = text
         }
       }
     } catch (e) {
-      // If parsing fails, use default message
       console.error("Error parsing error response:", e)
     }
 
-    // Add specific messages for common HTTP status codes
     if (response.status === 403) {
       errorMessage = "Acceso denegado. Verifica que tengas permisos o que tu sesión no haya expirado."
     } else if (response.status === 401) {
@@ -174,7 +167,6 @@ export const compradoresAPI = {
       "Content-Type": "application/json",
     }
 
-    // Use provided token or get from localStorage
     const authToken = token || getAuthToken()
     if (authToken) {
       headers["Authorization"] = `Bearer ${authToken}`
@@ -345,25 +337,21 @@ export const proveedoresAPI = {
 
     await handleFetchError(response, "Error al crear producto")
 
-    // Check if response is successful
     if (response.ok) {
       const contentType = response.headers.get("content-type")
 
-      // If response is JSON, parse it
       if (contentType && contentType.includes("application/json")) {
         return response.json()
       }
 
-      // If response is text (like "Producto creado exitosamente"), return a success object
       const text = await response.text()
       return {
         success: true,
         message: text || "Producto creado exitosamente",
-        id: null, // Backend should ideally return the created product ID
+        id: null,
       }
     }
 
-    // This shouldn't be reached due to handleFetchError, but just in case
     throw new Error("Error al crear producto")
   },
 
