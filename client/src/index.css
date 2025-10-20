@@ -1,5 +1,6 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Changed font-family to Roboto Slab */
+  font-family: "Roboto Slab", serif;
   line-height: 1.5;
   font-weight: 400;
 

@@ -11,6 +11,7 @@ import PerfilPage from "./pages/perfil/PerfilPage"
 import ComprasPage from "./pages/compras/ComprasPage"
 import ProveedorPage from "./pages/proveedor/ProveedorPage"
 import DetalleOrdenPage from "./pages/detalleOrden/DetalleOrdenPage"
+import ProductDetailPage from "./pages/productDetail/ProductDetailPage"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/register-proveedor" element={<RegisterProveedorPage />} />
             <Route path="/proveedor" element={<ProveedorPage />} />
+            <Route path="/producto/:id" element={<ProductDetailPage />} />
           </Routes>
         </main>
         <Footer />

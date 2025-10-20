@@ -1,16 +1,40 @@
 "use client"
 
 import { useContext } from "react"
+import { useNavigate } from "react-router-dom"
 import "./Card.css"
 import { CartContext } from "../../context/CartContext"
 
 function Card({ id, nombre, descripcion, precio, imagen_url, ubicacion, cant_personas, stock, descuento }) {
   const { addToCart } = useContext(CartContext)
+  const navigate = useNavigate()
 
   const precioOriginal = descuento > 0 ? precio / (1 - descuento / 100) : null
 
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking the add to cart button
+    if (e.target.closest(".btn-agregar-al-carrito")) {
+      return
+    }
+    navigate(`/producto/${id}`, {
+      state: {
+        product: {
+          id,
+          nombre,
+          descripcion,
+          precio,
+          imagen_url,
+          ubicacion,
+          cant_personas,
+          stock,
+          descuento,
+        },
+      },
+    })
+  }
+
   return (
-    <div className="card">
+    <div className="card" onClick={handleCardClick} style={{ cursor: "pointer" }}>
       <div className="card-image-container">
         {descuento > 0 && <div className="discount-badge">-{descuento}%</div>}
         <img src={imagen_url || "/placeholder.svg"} alt={nombre} />

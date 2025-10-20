@@ -1,3 +1,18 @@
+:root {
+  font-family: 'Roboto Slab', serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto Slab', serif;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
 .app {
   min-height: 100vh;
   width: 100%;
@@ -10,6 +25,5 @@
 }
 
 .app-content {
-  /* Removed padding-bottom since footer is no longer fixed */
-  flex: 1 1 auto; /* crece para empujar el footer al final */
+  flex: 1 1 auto; 
 }
