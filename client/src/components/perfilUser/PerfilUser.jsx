@@ -1,187 +1,185 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { direccionesAPI, compradoresAPI } from "../../services/api"
-import "./PerfilUser.css"
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUserProfile } from "../../redux/authSlice";
+import {
+  fetchDirecciones,
+  crearDireccion,
+  actualizarDireccion,
+  eliminarDireccion,
+} from "../../redux/direccionesSlice";
+import { compradoresAPI } from "../../services/api";
+import "./PerfilUser.css";
 
 const PerfilUser = () => {
-  const [user, setUser] = useState(null)
-  const [direcciones, setDirecciones] = useState([])
-  const [mostrarFormulario, setMostrarFormulario] = useState(false)
-  const [direccionEditando, setDireccionEditando] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+
+  const { direcciones, loading: loadingDirecciones } = useSelector(
+    (state) => state.direcciones
+  );
+
+  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [direccionEditando, setDireccionEditando] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [formularioDireccion, setFormularioDireccion] = useState({
     calle: "",
     numero: "",
     departamento: "",
     codigoPostal: "",
-  })
+  });
 
-  const [mostrarFormularioPerfil, setMostrarFormularioPerfil] = useState(false)
+  const [mostrarFormularioPerfil, setMostrarFormularioPerfil] = useState(false);
   const [formularioPerfil, setFormularioPerfil] = useState({
     nombre: "",
     apellido: "",
     telefono: "",
-  })
+  });
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
-
-    if (usuarioGuardado) {
-      const userData = JSON.parse(usuarioGuardado)
-      setUser(userData)
-      cargarDirecciones()
+    if (user) {
+      dispatch(fetchDirecciones());
     }
-  }, [])
-
-  const cargarDirecciones = async () => {
-    try {
-      setLoading(true)
-      const response = await direccionesAPI.getAll()
-      setDirecciones(response.content || response)
-    } catch (error) {
-      console.error("Error al cargar direcciones:", error)
-      alert("Error al cargar las direcciones")
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [user, dispatch]);
 
   const handleDireccionChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormularioDireccion({
       ...formularioDireccion,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handlePerfilChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormularioPerfil({
       ...formularioPerfil,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const guardarDireccion = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!formularioDireccion.calle || !formularioDireccion.numero || !formularioDireccion.departamento) {
-      alert("Por favor, completá los campos obligatorios.")
-      return
+    if (
+      !formularioDireccion.calle ||
+      !formularioDireccion.numero ||
+      !formularioDireccion.departamento
+    ) {
+      alert("Por favor, completá los campos obligatorios.");
+      return;
     }
 
-    if (!direccionEditando && direcciones.length >= 2) {
-      alert("Solo podés tener un máximo de 2 direcciones.")
-      return
+    const direccionesArray = direcciones.content || direcciones || [];
+    if (!direccionEditando && direccionesArray.length >= 2) {
+      alert("Solo podés tener un máximo de 2 direcciones.");
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
       if (direccionEditando) {
-        await direccionesAPI.update(direccionEditando.id, formularioDireccion)
+        await dispatch(
+          actualizarDireccion({
+            id: direccionEditando.id,
+            direccionData: formularioDireccion,
+          })
+        ).unwrap();
       } else {
-        await direccionesAPI.create(formularioDireccion)
+        await dispatch(crearDireccion(formularioDireccion)).unwrap();
       }
-      await cargarDirecciones()
-      cerrarFormulario()
-      alert("Dirección guardada exitosamente")
+      cerrarFormulario();
+      alert("Dirección guardada exitosamente");
     } catch (error) {
-      console.error("Error al guardar dirección:", error)
-      alert("Error al guardar la dirección")
+      console.error("Error al guardar dirección:", error);
+      alert("Error al guardar la dirección");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const guardarPerfil = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formularioPerfil.nombre || !formularioPerfil.apellido) {
-      alert("Por favor, completá los campos obligatorios (Nombre y Apellido).")
-      return
+      alert("Por favor, completá los campos obligatorios (Nombre y Apellido).");
+      return;
     }
 
     try {
-      setLoading(true)
-      const updatedUser = await compradoresAPI.update(user.id, formularioPerfil)
-
-      const usuarioActualizado = {
-        ...user,
-        nombre: formularioPerfil.nombre,
-        apellido: formularioPerfil.apellido,
-        telefono: formularioPerfil.telefono,
-      }
-      localStorage.setItem("usuarioLogueado", JSON.stringify(usuarioActualizado))
-
-      setUser(usuarioActualizado)
-      cerrarFormularioPerfil()
-      alert("Perfil actualizado exitosamente")
+      setLoading(true);
+      await dispatch(
+        updateUserProfile({ userId: user.id, userData: formularioPerfil })
+      ).unwrap();
+      cerrarFormularioPerfil();
+      alert("Perfil actualizado exitosamente");
     } catch (error) {
-      console.error("Error al actualizar perfil:", error)
-      alert(error.message || "Error al actualizar el perfil")
+      console.error("Error al actualizar perfil:", error);
+      alert(error || "Error al actualizar el perfil");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const eliminarDireccion = async (direccionId) => {
-    if (!confirm("¿Estás seguro de eliminar esta dirección?")) return
+  const eliminarDireccionHandler = async (direccionId) => {
+    if (!confirm("¿Estás seguro de eliminar esta dirección?")) return;
 
     try {
-      setLoading(true)
-      await direccionesAPI.delete(direccionId)
-      await cargarDirecciones()
-      alert("Dirección eliminada exitosamente")
+      setLoading(true);
+      await dispatch(eliminarDireccion(direccionId)).unwrap();
+      alert("Dirección eliminada exitosamente");
     } catch (error) {
-      console.error("Error al eliminar dirección:", error)
-      alert("Error al eliminar la dirección")
+      console.error("Error al eliminar dirección:", error);
+      alert("Error al eliminar la dirección");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const editarDireccion = (direccion) => {
-    setDireccionEditando(direccion)
+    setDireccionEditando(direccion);
     setFormularioDireccion({
       calle: direccion.calle,
       numero: direccion.numero,
       departamento: direccion.departamento,
       codigoPostal: direccion.codigoPostal || direccion.codigo_postal || "",
-    })
-    setMostrarFormulario(true)
-  }
+    });
+    setMostrarFormulario(true);
+  };
 
   const editarPerfil = () => {
     setFormularioPerfil({
       nombre: user.nombre || "",
       apellido: user.apellido || "",
       telefono: user.telefono || "",
-    })
-    setMostrarFormularioPerfil(true)
-  }
+    });
+    setMostrarFormularioPerfil(true);
+  };
 
   const cerrarFormulario = () => {
-    setMostrarFormulario(false)
-    setDireccionEditando(null)
+    setMostrarFormulario(false);
+    setDireccionEditando(null);
     setFormularioDireccion({
       calle: "",
       numero: "",
       departamento: "",
       codigoPostal: "",
-    })
-  }
+    });
+  };
 
   const cerrarFormularioPerfil = () => {
-    setMostrarFormularioPerfil(false)
+    setMostrarFormularioPerfil(false);
     setFormularioPerfil({
       nombre: "",
       apellido: "",
       telefono: "",
-    })
-  }
+    });
+  };
 
-  if (!user) return <div>Cargando...</div>
+  if (!user) return <div>Cargando...</div>;
+
+  const direccionesArray = direcciones.content || direcciones || [];
 
   return (
     <div className="perfil-grid">
@@ -192,8 +190,8 @@ const PerfilUser = () => {
             href="#"
             className="perfil-editar"
             onClick={(e) => {
-              e.preventDefault()
-              editarPerfil()
+              e.preventDefault();
+              editarPerfil();
             }}
           >
             Editar
@@ -233,23 +231,25 @@ const PerfilUser = () => {
       <section className="perfil-panel perfil-direccion">
         <div className="perfil-panel-header">
           <h3>Direcciones</h3>
-          {direcciones.length < 2 && (
+          {direccionesArray.length < 2 && (
             <button
               className="perfil-link perfil-btn-agregar"
               onClick={() => setMostrarFormulario(true)}
-              disabled={loading}
+              disabled={loading || loadingDirecciones}
             >
               + Agregar dirección
             </button>
           )}
         </div>
         <div className="perfil-panel-body">
-          {loading ? (
+          {loadingDirecciones ? (
             <p>Cargando direcciones...</p>
-          ) : direcciones.length === 0 ? (
-            <p className="perfil-sin-direcciones">No tenés direcciones guardadas</p>
+          ) : direccionesArray.length === 0 ? (
+            <p className="perfil-sin-direcciones">
+              No tenés direcciones guardadas
+            </p>
           ) : (
-            direcciones.map((direccion) => (
+            direccionesArray.map((direccion) => (
               <div key={direccion.id} className="perfil-direccion-item">
                 <div className="perfil-direccion-contenido">
                   <div className="perfil-direccion-texto">
@@ -265,12 +265,16 @@ const PerfilUser = () => {
                   </div>
                 </div>
                 <div className="perfil-direccion-acciones">
-                  <button className="perfil-btn-editar" onClick={() => editarDireccion(direccion)} disabled={loading}>
+                  <button
+                    className="perfil-btn-editar"
+                    onClick={() => editarDireccion(direccion)}
+                    disabled={loading}
+                  >
                     Editar
                   </button>
                   <button
                     className="perfil-btn-eliminar"
-                    onClick={() => eliminarDireccion(direccion.id)}
+                    onClick={() => eliminarDireccionHandler(direccion.id)}
                     disabled={loading}
                   >
                     Eliminar
@@ -284,10 +288,16 @@ const PerfilUser = () => {
 
       {mostrarFormularioPerfil && (
         <div className="perfil-modal-overlay" onClick={cerrarFormularioPerfil}>
-          <div className="perfil-modal-contenido" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="perfil-modal-contenido"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="perfil-modal-header">
               <h3>Editar perfil</h3>
-              <button className="perfil-modal-cerrar" onClick={cerrarFormularioPerfil}>
+              <button
+                className="perfil-modal-cerrar"
+                onClick={cerrarFormularioPerfil}
+              >
                 ×
               </button>
             </div>
@@ -315,11 +325,27 @@ const PerfilUser = () => {
                 value={formularioPerfil.telefono}
                 onChange={handlePerfilChange}
               />
-              <div style={{ padding: "12px", backgroundColor: "#f5f5f5", borderRadius: "4px", marginBottom: "12px" }}>
-                <span style={{ fontSize: "12px", color: "#666", display: "block", marginBottom: "4px" }}>
+              <div
+                style={{
+                  padding: "12px",
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "4px",
+                  marginBottom: "12px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "12px",
+                    color: "#666",
+                    display: "block",
+                    marginBottom: "4px",
+                  }}
+                >
                   Email (no modificable)
                 </span>
-                <span style={{ fontSize: "14px", color: "#333" }}>{user.email}</span>
+                <span style={{ fontSize: "14px", color: "#333" }}>
+                  {user.email}
+                </span>
               </div>
               <div className="perfil-form-acciones">
                 <button
@@ -330,7 +356,11 @@ const PerfilUser = () => {
                 >
                   Cancelar
                 </button>
-                <button type="submit" className="perfil-btn-guardar" disabled={loading}>
+                <button
+                  type="submit"
+                  className="perfil-btn-guardar"
+                  disabled={loading}
+                >
                   {loading ? "Guardando..." : "Guardar"}
                 </button>
               </div>
@@ -341,10 +371,18 @@ const PerfilUser = () => {
 
       {mostrarFormulario && (
         <div className="perfil-modal-overlay" onClick={cerrarFormulario}>
-          <div className="perfil-modal-contenido" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="perfil-modal-contenido"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="perfil-modal-header">
-              <h3>{direccionEditando ? "Editar dirección" : "Nueva dirección"}</h3>
-              <button className="perfil-modal-cerrar" onClick={cerrarFormulario}>
+              <h3>
+                {direccionEditando ? "Editar dirección" : "Nueva dirección"}
+              </h3>
+              <button
+                className="perfil-modal-cerrar"
+                onClick={cerrarFormulario}
+              >
                 ×
               </button>
             </div>
@@ -383,10 +421,19 @@ const PerfilUser = () => {
                 onChange={handleDireccionChange}
               />
               <div className="perfil-form-acciones">
-                <button type="button" className="perfil-btn-cancelar" onClick={cerrarFormulario} disabled={loading}>
+                <button
+                  type="button"
+                  className="perfil-btn-cancelar"
+                  onClick={cerrarFormulario}
+                  disabled={loading}
+                >
                   Cancelar
                 </button>
-                <button type="submit" className="perfil-btn-guardar" disabled={loading}>
+                <button
+                  type="submit"
+                  className="perfil-btn-guardar"
+                  disabled={loading}
+                >
                   {loading ? "Guardando..." : "Guardar"}
                 </button>
               </div>
@@ -395,7 +442,7 @@ const PerfilUser = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PerfilUser
+export default PerfilUser;

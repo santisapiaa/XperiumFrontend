@@ -1,35 +1,49 @@
-"use client"
+"use client";
 
-import { useNavigate } from "react-router-dom"
-import { useState, useEffect } from "react"
-import Card from "../card/Card"
-import "./FeaturedExperiences.css"
-import { productosAPI } from "../../services/api"
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchProductos,
+  selectProductos,
+  selectProductosLoading,
+  selectProductosError,
+} from "../../redux/productosSlices";
+import Card from "../card/Card";
+import "./FeaturedExperiences.css";
 
 function FeaturedExperiences() {
-  const navigate = useNavigate()
-  const [featuredProducts, setFeaturedProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const productos = useSelector(selectProductos);
+  const loading = useSelector(selectProductosLoading);
+  const error = useSelector(selectProductosError);
 
   useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        const productsResponse = await productosAPI.getAll()
-        const products = (productsResponse.content || productsResponse).map((product) => ({
-          ...product,
-          imagen_url: product.imagenUrl || product.imagen_url,
-          cant_personas: product.cantPersonas || product.cant_personas,
-        }))
-        setFeaturedProducts(products.slice(0, 4))
-      } catch (error) {
-        console.error("Error fetching featured products:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+    dispatch(fetchProductos());
+  }, [dispatch]);
 
-    fetchFeatured()
-  }, [])
+  if (error) {
+    return (
+      <div className="featured-experiences">
+        <div className="featured-header">
+          <h2>Experiencias destacadas</h2>
+        </div>
+        <div
+          style={{ textAlign: "center", padding: "1.5rem", color: "#d946ef" }}
+        >
+          <p>Error al cargar productos: {error}</p>
+          <button
+            onClick={() => dispatch(fetchProductos())}
+            style={{ marginTop: "1rem" }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -37,16 +51,24 @@ function FeaturedExperiences() {
         <div className="featured-header">
           <h2>Experiencias destacadas</h2>
         </div>
-        <p style={{ textAlign: "center", padding: "1.5rem" }}>Cargando productos...</p>
+        <p style={{ textAlign: "center", padding: "1.5rem" }}>
+          Cargando productos...
+        </p>
       </div>
-    )
+    );
   }
+
+  // Show only first 4 products as featured
+  const featuredProducts = productos.slice(0, 4);
 
   return (
     <div className="featured-experiences">
       <div className="featured-header">
         <h2>Experiencias destacadas</h2>
-        <button className="view-all-btn" onClick={() => navigate("/experiencias")}>
+        <button
+          className="view-all-btn"
+          onClick={() => navigate("/experiencias")}
+        >
           Ver todas →
         </button>
       </div>
@@ -63,12 +85,12 @@ function FeaturedExperiences() {
             ubicacion={product.ubicacion}
             cant_personas={product.cant_personas}
             stock={product.stock}
+            descuento={product.descuento}
           />
         ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default FeaturedExperiences
-
+export default FeaturedExperiences;

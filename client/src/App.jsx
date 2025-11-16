@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Homepage from "./pages/home/Homepage"
-import Regalospage from "./pages/regalos/Regalospage"
-import Eventospage from "./pages/eventos/Eventospage"
-import Cartpage from "./pages/cart/Cartpage"
-import LoginPage from "./pages/login/LoginPage"
-import RegisterPage from "./pages/login/RegisterPage"
-import RegisterProveedorPage from "./pages/login/RegisterProveedorPage"
-import Footer from "./components/footer/Footer"
-import PerfilPage from "./pages/perfil/PerfilPage"
-import ComprasPage from "./pages/compras/ComprasPage"
-import ProveedorPage from "./pages/proveedor/ProveedorPage"
-import DetalleOrdenPage from "./pages/detalleOrden/DetalleOrdenPage"
-import ProductDetailPage from "./pages/productDetail/ProductDetailPage"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Homepage from "./pages/home/Homepage";
+import Regalospage from "./pages/regalos/Regalospage";
+import Eventospage from "./pages/eventos/Eventospage";
+import Cartpage from "./pages/cart/Cartpage";
+import LoginPage from "./pages/login/LoginPage";
+import RegisterPage from "./pages/login/RegisterPage";
+import RegisterProveedorPage from "./pages/login/RegisterProveedorPage";
+import Footer from "./components/footer/Footer";
+import PerfilPage from "./pages/perfil/PerfilPage";
+import ComprasPage from "./pages/compras/ComprasPage";
+import ProveedorPage from "./pages/proveedor/ProveedorPage";
+import DetalleOrdenPage from "./pages/detalleOrden/DetalleOrdenPage";
+import ProductDetailPage from "./pages/productDetail/ProductDetailPage";
 
 function App() {
   return (
@@ -28,7 +28,10 @@ function App() {
             <Route path="/compras" element={<ComprasPage />} />
             <Route path="/compras/:id" element={<DetalleOrdenPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/register-proveedor" element={<RegisterProveedorPage />} />
+            <Route
+              path="/register-proveedor"
+              element={<RegisterProveedorPage />}
+            />
             <Route path="/proveedor" element={<ProveedorPage />} />
             <Route path="/producto/:id" element={<ProductDetailPage />} />
           </Routes>
@@ -36,7 +39,7 @@ function App() {
         <Footer />
       </div>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

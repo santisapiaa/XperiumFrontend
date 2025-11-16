@@ -1,86 +1,90 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { authAPI, compradoresAPI, proveedoresAPI } from "../../services/api"
-import "./Login.css"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  login,
+  selectAuthLoading,
+  selectAuthError,
+} from "../../redux/authSlice";
+import "./Login.css";
 
 function Login() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const loading = useSelector(selectAuthLoading);
+  const error = useSelector(selectAuthError);
 
   const [loginData, setLoginData] = useState({
     email: "",
     contrasenia: "",
-  })
-
-  const [loading, setLoading] = useState(false)
+  });
 
   const handleChange = (e) => {
-    setLoginData({ ...loginData, [e.target.name]: e.target.value })
-  }
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  };
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
 
     try {
-      const loginResponse = await authAPI.login(loginData.email, loginData.contrasenia)
-      localStorage.setItem("token", loginResponse.access_token)
+      const result = await dispatch(
+        login({
+          email: loginData.email,
+          contrasenia: loginData.contrasenia,
+        })
+      ).unwrap();
 
-      try {
-        const userData = await compradoresAPI.getMiCuenta(loginResponse.access_token)
-        const userToSave = {
-          ...userData,
-          access_token: loginResponse.access_token,
-          role: "COMPRADOR",
-        }
-        localStorage.setItem("usuarioLogueado", JSON.stringify(userToSave))
-        alert(`Bienvenido ${userData.nombre || "Usuario"}! Has iniciado sesión correctamente.`)
-        navigate("/")
-      } catch (compradorError) {
-        try {
-          const proveedorData = await proveedoresAPI.getMiCuenta(loginResponse.access_token)
-          const userToSave = {
-            ...proveedorData,
-            access_token: loginResponse.access_token,
-            role: "PROVEEDOR",
-          }
-          localStorage.setItem("usuarioLogueado", JSON.stringify(userToSave))
-          alert(`Bienvenido ${proveedorData.nombre || "Vendedor"}! Has iniciado sesión correctamente.`)
-          navigate("/proveedor")
-        } catch (proveedorError) {
-          const minimalUserData = {
-            email: loginData.email,
-            access_token: loginResponse.access_token,
-          }
-          localStorage.setItem("usuarioLogueado", JSON.stringify(minimalUserData))
-          alert(`Bienvenido! Has iniciado sesión correctamente.`)
-          navigate("/")
-        }
-      }
-    } catch (error) {
-      console.error("Login error:", error)
+      const userName = result.userData?.nombre || result.nombre || "Usuario";
+      const userRole = result.rol;
 
-      if (error.message.includes("CORS") || error.message.includes("conectar al servidor")) {
-        alert(
-          "Error de conexión con el servidor. Asegúrate de haber configurado CORS globalmente en el backend (WebConfig).",
-        )
+      alert(`Bienvenido ${userName}! Has iniciado sesión correctamente.`);
+
+      console.log("Login result:", result);
+      console.log("User role:", userRole);
+
+      if (userRole === "PROVEEDOR") {
+        navigate("/proveedor");
       } else {
-        alert("Usuario o contraseña incorrectos.")
+        navigate("/");
       }
-    } finally {
-      setLoading(false)
+    } catch (err) {
+      console.error("Login error:", err);
+
+      if (err.includes("CORS") || err.includes("conectar al servidor")) {
+        alert(
+          "Error de conexión con el servidor. Asegúrate de haber configurado CORS globalmente en el backend (WebConfig)."
+        );
+      } else {
+        alert("Usuario o contraseña incorrectos.");
+      }
     }
-  }
+  };
 
   return (
     <div className="login-container">
       <div className="login-box">
         <h1>Iniciar Sesión</h1>
 
+        {error && <div className="login-error">{error}</div>}
+
         <form className="login-form" onSubmit={handleLogin}>
-          <input type="email" name="email" placeholder="Correo electrónico" onChange={handleChange} required />
-          <input type="password" name="contrasenia" placeholder="Contraseña" onChange={handleChange} required />
+          <input
+            type="email"
+            name="email"
+            placeholder="Correo electrónico"
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="contrasenia"
+            placeholder="Contraseña"
+            onChange={handleChange}
+            required
+          />
           <button type="submit" disabled={loading}>
             {loading ? "Ingresando..." : "Ingresar"}
           </button>
@@ -91,8 +95,8 @@ function Login() {
           <a
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              navigate("/register")
+              e.preventDefault();
+              navigate("/register");
             }}
           >
             Registrate
@@ -103,8 +107,8 @@ function Login() {
           <a
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              navigate("/register-proveedor")
+              e.preventDefault();
+              navigate("/register-proveedor");
             }}
             style={{ color: "#d946ef" }}
           >
@@ -113,7 +117,7 @@ function Login() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

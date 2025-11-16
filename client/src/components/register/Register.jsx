@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import "./Register.css"
-import { authAPI } from "../../services/api"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { registerComprador, login } from "../../redux/authSlice";
+import "./Register.css";
 
 function Register() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { loading } = useSelector((state) => state.auth);
 
   const [userData, setUserData] = useState({
     nombre: "",
@@ -15,31 +19,34 @@ function Register() {
     telefono: "",
     contrasenia: "",
     confirmPassword: "",
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value })
-    if (error) setError("")
-  }
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+    if (error) setError("");
+  };
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
-    if (!userData.nombre || !userData.apellido || !userData.email || !userData.telefono || !userData.contrasenia) {
-      setError("Por favor, completá todos los campos.")
-      return
+    if (
+      !userData.nombre ||
+      !userData.apellido ||
+      !userData.email ||
+      !userData.telefono ||
+      !userData.contrasenia
+    ) {
+      setError("Por favor, completá todos los campos.");
+      return;
     }
 
     if (userData.contrasenia !== userData.confirmPassword) {
-      setError("Las contraseñas no coinciden.")
-      return
+      setError("Las contraseñas no coinciden.");
+      return;
     }
-
-    setLoading(true)
 
     try {
       const nuevoUsuario = {
@@ -49,19 +56,26 @@ function Register() {
         telefono: userData.telefono,
         contrasenia: userData.contrasenia,
         role: "COMPRADOR",
-      }
+      };
 
-      await authAPI.registerComprador(nuevoUsuario)
+      const result = await dispatch(registerComprador(nuevoUsuario)).unwrap();
 
-      alert("Usuario registrado correctamente.")
-      navigate("/login")
+      alert("Usuario registrado correctamente.");
+
+      // Hacer login automático
+      await dispatch(
+        login({
+          email: userData.email,
+          contrasenia: userData.contrasenia,
+        })
+      ).unwrap();
+
+      navigate("/");
     } catch (error) {
-      console.error("Error al registrar usuario:", error)
-      setError(error.message || "Error al registrar usuario.")
-    } finally {
-      setLoading(false)
+      console.error("Error al registrar usuario:", error);
+      setError(error || "Error al registrar usuario.");
     }
-  }
+  };
 
   return (
     <div className="login-container">
@@ -86,8 +100,20 @@ function Register() {
         )}
 
         <form className="login-form" onSubmit={handleRegister}>
-          <input type="text" name="nombre" placeholder="Nombre" value={userData.nombre} onChange={handleChange} />
-          <input type="text" name="apellido" placeholder="Apellido" value={userData.apellido} onChange={handleChange} />
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre"
+            value={userData.nombre}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="apellido"
+            placeholder="Apellido"
+            value={userData.apellido}
+            onChange={handleChange}
+          />
           <input
             type="email"
             name="email"
@@ -95,7 +121,13 @@ function Register() {
             value={userData.email}
             onChange={handleChange}
           />
-          <input type="tel" name="telefono" placeholder="Teléfono" value={userData.telefono} onChange={handleChange} />
+          <input
+            type="tel"
+            name="telefono"
+            placeholder="Teléfono"
+            value={userData.telefono}
+            onChange={handleChange}
+          />
           <input
             type="password"
             name="contrasenia"
@@ -121,8 +153,8 @@ function Register() {
           <a
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              navigate("/login")
+              e.preventDefault();
+              navigate("/login");
             }}
           >
             Iniciar sesión
@@ -130,7 +162,7 @@ function Register() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;

@@ -1,52 +1,56 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { ordenesDeCompraAPI } from "../../services/api"
-import { useNavigate } from "react-router-dom"
-import "./MisCompras.css"
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchOrdenes,
+  selectOrdenes,
+  selectOrdenesLoading,
+  selectOrdenesError,
+} from "../../redux/ordenesSlice";
+import { selectUser } from "../../redux/authSlice";
+import { useNavigate } from "react-router-dom";
+import "./MisCompras.css";
 
 function MisCompras() {
-  const [ordenes, setOrdenes] = useState([])
-  const [usuario, setUsuario] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const ordenes = useSelector(selectOrdenes);
+  const loading = useSelector(selectOrdenesLoading);
+  const error = useSelector(selectOrdenesError);
+  const user = useSelector(selectUser);
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
-    if (usuarioGuardado) {
-      const datosUsuario = JSON.parse(usuarioGuardado)
-      setUsuario(datosUsuario)
-      cargarOrdenes()
-    } else {
-      setLoading(false)
+    if (user) {
+      dispatch(fetchOrdenes());
     }
-  }, [])
-
-  const cargarOrdenes = async () => {
-    try {
-      setLoading(true)
-      const response = await ordenesDeCompraAPI.getAll()
-
-      const ordenesData = response.content || response
-
-      const ordenesFiltradas = ordenesData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
-
-      setOrdenes(ordenesFiltradas)
-    } catch (error) {
-      console.error("Error loading orders:", error)
-      alert("Error al cargar tus compras. Por favor, intenta nuevamente.")
-    } finally {
-      setLoading(false)
-    }
-  }
+  }, [user, dispatch]);
 
   const formatearFecha = (fechaString) => {
-    const [year, month, day] = fechaString.split("-")
-    return `${day}/${month}/${year}`
-  }
+    const [year, month, day] = fechaString.split("-");
+    return `${day}/${month}/${year}`;
+  };
 
   const verDetalle = (ordenId) => {
-    navigate(`/compras/${ordenId}`)
+    navigate(`/compras/${ordenId}`);
+  };
+
+  if (error) {
+    return (
+      <div className="mis-compras-container">
+        <h2>Mis Compras</h2>
+        <div style={{ textAlign: "center", padding: "2rem", color: "#d946ef" }}>
+          <p>Error al cargar tus compras: {error}</p>
+          <button
+            onClick={() => dispatch(fetchOrdenes())}
+            style={{ marginTop: "1rem" }}
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (loading) {
@@ -56,10 +60,10 @@ function MisCompras() {
           <p>Cargando tus compras...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  if (!usuario) {
+  if (!user) {
     return (
       <div className="mis-compras-container">
         <div className="no-auth">
@@ -67,27 +71,34 @@ function MisCompras() {
           <button onClick={() => navigate("/login")}>Iniciar Sesión</button>
         </div>
       </div>
-    )
+    );
   }
 
-  if (ordenes.length === 0) {
+  const ordenesData = ordenes?.content || ordenes || [];
+  const ordenesFiltradas = [...ordenesData].sort(
+    (a, b) => new Date(b.fecha) - new Date(a.fecha)
+  );
+
+  if (ordenesFiltradas.length === 0) {
     return (
       <div className="mis-compras-container">
         <h2>Mis Compras</h2>
         <div className="no-compras">
           <p>Aún no has realizado ninguna compra.</p>
-          <button onClick={() => navigate("/experiencias")}>Explorar Productos</button>
+          <button onClick={() => navigate("/experiencias")}>
+            Explorar Productos
+          </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="mis-compras-container">
       <h2>Mis Compras</h2>
       <div className="ordenes-lista">
-        {ordenes.map((orden) => {
-          const detalles = orden.detalleOrdenDeCompra || []
+        {ordenesFiltradas.map((orden) => {
+          const detalles = orden.detalleOrdenDeCompra || [];
           return (
             <div key={orden.id} className="orden-card">
               <div className="orden-header">
@@ -97,7 +108,9 @@ function MisCompras() {
                 </div>
                 <div className="orden-total">
                   <p className="total-label">Total</p>
-                  <p className="total-monto">${orden.total?.toLocaleString() || "0"}</p>
+                  <p className="total-monto">
+                    ${orden.total?.toLocaleString() || "0"}
+                  </p>
                 </div>
               </div>
 
@@ -105,16 +118,19 @@ function MisCompras() {
                 <p className="productos-count">
                   {detalles.length} producto{detalles.length !== 1 ? "s" : ""}
                 </p>
-                <button onClick={() => verDetalle(orden.id)} className="btn-ver-detalle">
+                <button
+                  onClick={() => verDetalle(orden.id)}
+                  className="btn-ver-detalle"
+                >
                   Ver detalle
                 </button>
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
-export default MisCompras
+export default MisCompras;

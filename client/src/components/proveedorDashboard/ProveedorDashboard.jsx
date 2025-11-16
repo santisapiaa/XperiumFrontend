@@ -1,19 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { proveedoresAPI, categoriasAPI } from "../../services/api"
-import "./ProveedorDashboard.css"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchMiCuenta,
+  fetchMisProductos,
+  crearProducto as crearProductoThunk,
+  actualizarProducto as actualizarProductoThunk,
+  eliminarProducto as eliminarProductoThunk,
+} from "../../redux/proveedorSlice";
+import { logout, selectUser } from "../../redux/authSlice";
+import { fetchCategorias } from "../../redux/categoriasSlice";
+import "./ProveedorDashboard.css";
 
 function ProveedorDashboard() {
-  const navigate = useNavigate()
-  const [proveedor, setProveedor] = useState(null)
-  const [productos, setProductos] = useState([])
-  const [categorias, setCategorias] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [editingProduct, setEditingProduct] = useState(null)
-  const [originalPrice, setOriginalPrice] = useState(null)
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {
+    cuenta: proveedor,
+    productos,
+    loading,
+    error,
+  } = useSelector((state) => state.proveedor);
+  const { items: categorias } = useSelector((state) => state.categorias);
+  const authUser = useSelector(selectUser);
+
+  // Usar datos de auth como fallback si proveedor no está cargado aún
+  const proveedorData = proveedor || authUser;
+
+  const [showModal, setShowModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [originalPrice, setOriginalPrice] = useState(null);
   const [formData, setFormData] = useState({
     nombre: "",
     descripcion: "",
@@ -25,61 +44,43 @@ function ProveedorDashboard() {
     cantPersonas: "",
     categoriaId: "",
     descuento: "0",
-  })
+  });
 
   useEffect(() => {
-    loadProveedorData()
-    loadCategorias()
-  }, [])
+    dispatch(fetchMiCuenta());
+    dispatch(fetchMisProductos());
+    dispatch(fetchCategorias());
+  }, [dispatch]);
 
-  const loadProveedorData = async () => {
-    try {
-      const userData = await proveedoresAPI.getMiCuenta()
-      setProveedor(userData)
-
-      const productosData = await proveedoresAPI.getMisProductos()
-      setProductos(productosData.content || [])
-    } catch (error) {
-      console.error("Error loading proveedor data:", error)
-      alert("Error al cargar los datos. Por favor, inicia sesión nuevamente.")
-      navigate("/login")
-    } finally {
-      setLoading(false)
-    }
+  if (loading) {
+    return (
+      <div className="proveedor-container">
+        <p>Cargando datos...</p>
+      </div>
+    );
   }
 
-  const loadCategorias = async () => {
-    try {
-      const categoriasData = await categoriasAPI.getAll()
-
-      let categoriasArray = []
-
-      if (Array.isArray(categoriasData)) {
-        categoriasArray = categoriasData
-      } else if (categoriasData && categoriasData.content) {
-        categoriasArray = categoriasData.content
-      } else if (categoriasData && typeof categoriasData === "object") {
-        categoriasArray = categoriasData.data || categoriasData.items || categoriasData.categorias || []
-      }
-
-      setCategorias(categoriasArray)
-    } catch (error) {
-      console.error("Error loading categorias:", error)
-      alert("Error al cargar categorías: " + error.message)
-    }
+  if (error) {
+    return (
+      <div className="proveedor-container">
+        <p style={{ color: "red" }}>Error: {error}</p>
+      </div>
+    );
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("usuarioLogueado")
-    localStorage.removeItem("token")
-    navigate("/login")
-  }
+    dispatch(logout());
+    navigate("/login");
+  };
 
   const handleOpenModal = (producto = null) => {
     if (producto) {
-      setEditingProduct(producto)
-      const precioOriginal = producto.descuento > 0 ? producto.precio / (1 - producto.descuento / 100) : producto.precio
-      setOriginalPrice(precioOriginal)
+      setEditingProduct(producto);
+      const precioOriginal =
+        producto.descuento > 0
+          ? producto.precio / (1 - producto.descuento / 100)
+          : producto.precio;
+      setOriginalPrice(precioOriginal);
 
       setFormData({
         nombre: producto.nombre,
@@ -92,10 +93,10 @@ function ProveedorDashboard() {
         cantPersonas: producto.cantPersonas,
         categoriaId: producto.categoriaId,
         descuento: producto.descuento || "0",
-      })
+      });
     } else {
-      setEditingProduct(null)
-      setOriginalPrice(null)
+      setEditingProduct(null);
+      setOriginalPrice(null);
       setFormData({
         nombre: "",
         descripcion: "",
@@ -107,47 +108,51 @@ function ProveedorDashboard() {
         cantPersonas: "",
         categoriaId: "",
         descuento: "0",
-      })
+      });
     }
-    setShowModal(true)
-  }
+    setShowModal(true);
+  };
 
   const handleCloseModal = () => {
-    setShowModal(false)
-    setEditingProduct(null)
-  }
+    setShowModal(false);
+    setEditingProduct(null);
+  };
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
     if (name === "descuento") {
-      const newDescuento = Number.parseInt(value) || 0
+      const newDescuento = Number.parseInt(value) || 0;
 
       if (newDescuento === 0 && originalPrice !== null) {
-        setFormData({ ...formData, [name]: value, precio: originalPrice.toString() })
-        return
+        setFormData({
+          ...formData,
+          [name]: value,
+          precio: originalPrice.toString(),
+        });
+        return;
       }
     }
 
     if (name === "precio" && originalPrice === null && value) {
-      setOriginalPrice(Number.parseFloat(value))
+      setOriginalPrice(Number.parseFloat(value));
     }
 
-    setFormData({ ...formData, [name]: value })
-  }
+    setFormData({ ...formData, [name]: value });
+  };
 
   const calculateFinalPrice = () => {
-    const precio = Number.parseFloat(formData.precio) || 0
-    const descuento = Number.parseInt(formData.descuento) || 0
+    const precio = Number.parseFloat(formData.precio) || 0;
+    const descuento = Number.parseInt(formData.descuento) || 0;
 
     if (descuento > 0 && descuento <= 100) {
-      return precio * (1 - descuento / 100)
+      return precio * (1 - descuento / 100);
     }
-    return precio
-  }
+    return precio;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       const productoData = {
@@ -158,46 +163,51 @@ function ProveedorDashboard() {
         cantPersonas: Number.parseInt(formData.cantPersonas),
         categoriaId: Number.parseInt(formData.categoriaId),
         descuento: Number.parseInt(formData.descuento),
-      }
+      };
 
       if (editingProduct) {
-        await proveedoresAPI.updateProducto(editingProduct.id, productoData)
-        alert("Producto actualizado exitosamente")
+        await dispatch(
+          actualizarProductoThunk({ id: editingProduct.id, productoData })
+        ).unwrap();
+        alert("Producto actualizado exitosamente");
       } else {
-        await proveedoresAPI.createProducto(productoData)
-        alert("Producto creado exitosamente")
+        await dispatch(crearProductoThunk(productoData)).unwrap();
+        alert("Producto creado exitosamente");
       }
 
-      handleCloseModal()
-      loadProveedorData()
+      handleCloseModal();
     } catch (error) {
-      console.error("Error saving producto:", error)
-      alert("Error al guardar el producto: " + error.message)
+      console.error("Error saving producto:", error);
+      alert("Error al guardar el producto: " + error);
     }
-  }
+  };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-      return
+    if (
+      !window.confirm("¿Estás seguro de que deseas eliminar este producto?")
+    ) {
+      return;
     }
 
     try {
-      await proveedoresAPI.deleteProducto(id)
-      alert("Producto eliminado exitosamente")
-      loadProveedorData()
+      await dispatch(eliminarProductoThunk(id)).unwrap();
+      alert("Producto eliminado exitosamente");
     } catch (error) {
-      console.error("Error deleting producto:", error)
-      alert("Error al eliminar el producto: " + error.message)
+      console.error("Error deleting producto:", error);
+      alert("Error al eliminar el producto: " + error);
     }
-  }
+  };
 
-  if (loading) {
-    return (
-      <div className="proveedor-container">
-        <p>Cargando...</p>
-      </div>
-    )
-  }
+  const productosArray = productos
+    ? Array.isArray(productos)
+      ? productos
+      : productos?.content || []
+    : [];
+  const categoriasArray = categorias
+    ? Array.isArray(categorias)
+      ? categorias
+      : categorias?.content || []
+    : [];
 
   return (
     <div className="proveedor-container">
@@ -213,15 +223,15 @@ function ProveedorDashboard() {
         <div className="info-grid">
           <div className="info-item">
             <label>Nombre:</label>
-            <span>{proveedor?.nombre || "—"}</span>
+            <span>{proveedorData?.nombre || "—"}</span>
           </div>
           <div className="info-item">
             <label>Email:</label>
-            <span>{proveedor?.email || "—"}</span>
+            <span>{proveedorData?.email || "—"}</span>
           </div>
           <div className="info-item">
             <label>Teléfono:</label>
-            <span>{proveedor?.telefono || "—"}</span>
+            <span>{proveedorData?.telefono || "—"}</span>
           </div>
         </div>
       </section>
@@ -234,34 +244,60 @@ function ProveedorDashboard() {
           </button>
         </div>
 
-        {productos.length === 0 ? (
-          <p className="no-productos">No tienes productos aún. ¡Agrega tu primer producto!</p>
+        {productosArray.length === 0 ? (
+          <p className="no-productos">
+            No tienes productos aún. ¡Agrega tu primer producto!
+          </p>
         ) : (
           <div className="productos-grid">
-            {productos.map((producto) => (
+            {productosArray.map((producto) => (
               <div key={producto.id} className="producto-card">
-                <img src={producto.imagenUrl || "/placeholder.svg?height=200&width=300"} alt={producto.nombre} />
+                <img
+                  src={
+                    producto.imagenUrl ||
+                    "/placeholder.svg?height=200&width=300"
+                  }
+                  alt={producto.nombre}
+                />
                 <div className="producto-info">
                   <h3>{producto.nombre}</h3>
                   <p className="producto-descripcion">{producto.descripcion}</p>
                   {producto.descuento > 0 ? (
                     <div className="producto-precio-container">
-                      <p className="producto-descuento">Descuento: {producto.descuento}%</p>
-                      <p className="producto-precio-original">
-                        ${(producto.precio / (1 - producto.descuento / 100)).toLocaleString()}
+                      <p className="producto-descuento">
+                        Descuento: {producto.descuento}%
                       </p>
-                      <p className="producto-precio">${producto.precio.toLocaleString()}</p>
+                      <p className="producto-precio-original">
+                        $
+                        {(
+                          (producto.precio || 0) /
+                          (1 - (producto.descuento || 0) / 100)
+                        ).toLocaleString()}
+                      </p>
+                      <p className="producto-precio">
+                        ${(producto.precio || 0).toLocaleString()}
+                      </p>
                     </div>
                   ) : (
-                    <p className="producto-precio">${producto.precio.toLocaleString()}</p>
+                    <p className="producto-precio">
+                      ${(producto.precio || 0).toLocaleString()}
+                    </p>
                   )}
-                  <p className="producto-stock">Stock: {producto.stock}</p>
-                  <p className="producto-estado">Estado: {producto.estado}</p>
+                  <p className="producto-stock">Stock: {producto.stock || 0}</p>
+                  <p className="producto-estado">
+                    Estado: {producto.estado || "N/A"}
+                  </p>
                   <div className="producto-actions">
-                    <button onClick={() => handleOpenModal(producto)} className="edit-btn">
+                    <button
+                      onClick={() => handleOpenModal(producto)}
+                      className="edit-btn"
+                    >
                       Editar
                     </button>
-                    <button onClick={() => handleDelete(producto.id)} className="delete-btn">
+                    <button
+                      onClick={() => handleDelete(producto.id)}
+                      className="delete-btn"
+                    >
                       Eliminar
                     </button>
                   </div>
@@ -309,7 +345,7 @@ function ProveedorDashboard() {
                       src={formData.imagenUrl || "/placeholder.svg"}
                       alt="Preview"
                       onError={(e) => {
-                        e.target.src = "/placeholder.svg?height=200&width=300"
+                        e.target.src = "/placeholder.svg?height=200&width=300";
                       }}
                     />
                   </div>
@@ -339,10 +375,13 @@ function ProveedorDashboard() {
                 <div className="precio-preview">
                   <p>
                     <strong>Precio base:</strong> $
-                    {Number.parseFloat(formData.precio).toLocaleString("es-AR", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    {Number.parseFloat(formData.precio).toLocaleString(
+                      "es-AR",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}
                   </p>
                   <p>
                     <strong>Descuento:</strong> {formData.descuento}%
@@ -356,7 +395,12 @@ function ProveedorDashboard() {
                   </p>
                 </div>
               )}
-              <select name="estado" value={formData.estado} onChange={handleChange} required>
+              <select
+                name="estado"
+                value={formData.estado}
+                onChange={handleChange}
+                required
+              >
                 <option value="DISPONIBLE">Disponible</option>
                 <option value="NO_DISPONIBLE">No Disponible</option>
               </select>
@@ -384,9 +428,14 @@ function ProveedorDashboard() {
                 onChange={handleChange}
                 required
               />
-              <select name="categoriaId" value={formData.categoriaId} onChange={handleChange} required>
+              <select
+                name="categoriaId"
+                value={formData.categoriaId}
+                onChange={handleChange}
+                required
+              >
                 <option value="">Selecciona una categoría</option>
-                {categorias.map((cat) => (
+                {categoriasArray.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.descripcion}
                   </option>
@@ -396,7 +445,11 @@ function ProveedorDashboard() {
                 <button type="submit" className="save-btn">
                   {editingProduct ? "Actualizar" : "Crear"}
                 </button>
-                <button type="button" onClick={handleCloseModal} className="cancel-btn">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="cancel-btn"
+                >
                   Cancelar
                 </button>
               </div>
@@ -405,7 +458,7 @@ function ProveedorDashboard() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default ProveedorDashboard
+export default ProveedorDashboard;

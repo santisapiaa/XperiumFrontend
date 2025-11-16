@@ -1,49 +1,44 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, setUser } from "../../redux/authSlice";
 
 function MenuUsuario({ onClose }) {
-  const navigate = useNavigate()
-  const [usuario, setUsuario] = useState(null)
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
-    if (usuarioGuardado) {
-      const datosUsuario = JSON.parse(usuarioGuardado)
-      setUsuario(datosUsuario)
-    }
-  }, [])
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
-    localStorage.removeItem("usuarioLogueado")
-    localStorage.removeItem("token")
-    alert("���� Sesión cerrada correctamente")
-    navigate("/login")
-    if (onClose) onClose()
-  }
+    dispatch(logout());
+    alert("👋 Sesión cerrada correctamente");
+    navigate("/login");
+    if (onClose) onClose();
+  };
 
   const handlePerfil = () => {
-    navigate("/perfil")
-    if (onClose) onClose()
-  }
+    navigate("/perfil");
+    if (onClose) onClose();
+  };
 
   const handleCompras = () => {
-    navigate("/compras")
-    if (onClose) onClose()
-  }
+    navigate("/compras");
+    if (onClose) onClose();
+  };
 
   const handleLogin = () => {
-    navigate("/login")
-    if (onClose) onClose()
-  }
+    navigate("/login");
+    if (onClose) onClose();
+  };
 
   const handleRegister = () => {
-    navigate("/register")
-    if (onClose) onClose()
-  }
+    navigate("/register");
+    if (onClose) onClose();
+  };
 
-  if (!usuario) {
+  if (!user) {
     return (
       <div
         style={{
@@ -87,7 +82,7 @@ function MenuUsuario({ onClose }) {
           📝 Registrate
         </button>
       </div>
-    )
+    );
   }
 
   return (
@@ -113,7 +108,7 @@ function MenuUsuario({ onClose }) {
           borderBottom: "1px solid #eee",
         }}
       >
-        Hola, {usuario.nombre}
+        Hola, {user.nombre}
       </p>
       <button
         onClick={handlePerfil}
@@ -156,7 +151,7 @@ function MenuUsuario({ onClose }) {
         🚪 Cerrar sesión
       </button>
     </div>
-  )
+  );
 }
 
-export default MenuUsuario
+export default MenuUsuario;

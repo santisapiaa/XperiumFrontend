@@ -1,50 +1,42 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { ordenesDeCompraAPI } from "../../services/api"
-import "./DetalleOrden.css"
+import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrdenById } from "../../redux/ordenesSlice";
+import "./DetalleOrden.css";
 
 function DetalleOrden() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const [orden, setOrden] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {
+    ordenActual: orden,
+    loading,
+    error,
+  } = useSelector((state) => state.ordenes);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
-    if (!usuarioGuardado) {
-      navigate("/login")
-      return
+    if (!user) {
+      navigate("/login");
+      return;
     }
-    cargarOrden()
-  }, [id])
-
-  const cargarOrden = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const ordenCompleta = await ordenesDeCompraAPI.getById(id)
-      setOrden(ordenCompleta)
-    } catch (error) {
-      console.error("Error loading order:", error)
-      setError("No se pudo cargar el detalle de la orden. Por favor, intenta nuevamente.")
-    } finally {
-      setLoading(false)
-    }
-  }
+    dispatch(fetchOrdenById(id));
+  }, [id, dispatch, user, navigate]);
 
   const formatearFecha = (fechaString) => {
-    const [year, month, day] = fechaString.split("-")
-    return `${day}/${month}/${year}`
-  }
+    const [year, month, day] = fechaString.split("-");
+    return `${day}/${month}/${year}`;
+  };
 
   const calcularSubtotal = (detalle) => {
-    const cantidad = detalle.cantidad || 0
-    const precioUnitario = detalle.precio_unitario || detalle.precioUnitario || 0
-    return cantidad * precioUnitario
-  }
+    const cantidad = detalle.cantidad || 0;
+    const precioUnitario =
+      detalle.precio_unitario || detalle.precioUnitario || 0;
+    return cantidad * precioUnitario;
+  };
 
   if (loading) {
     return (
@@ -53,7 +45,7 @@ function DetalleOrden() {
           <p>Cargando detalle de la orden...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -66,7 +58,7 @@ function DetalleOrden() {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   if (!orden) {
@@ -79,10 +71,10 @@ function DetalleOrden() {
           </button>
         </div>
       </div>
-    )
+    );
   }
 
-  const detalles = orden.detalleOrdenDeCompra || []
+  const detalles = orden.detalleOrdenDeCompra || [];
 
   return (
     <div className="detalle-orden-container">
@@ -119,20 +111,29 @@ function DetalleOrden() {
                   )}
                   <div className="producto-info">
                     <h3>
-                      {detalle.producto?.nombre || detalle.productoNombre || "Producto"}
+                      {detalle.producto?.nombre ||
+                        detalle.productoNombre ||
+                        "Producto"}
                     </h3>
-                    <span className="detalle-cantidad">Cantidad: {detalle.cantidad}</span>
+                    <span className="detalle-cantidad">
+                      Cantidad: {detalle.cantidad}
+                    </span>
                     <span className="detalle-precio">
-                      Precio unitario: ${(detalle.precio_unitario || detalle.precioUnitario || 0).toLocaleString()}
+                      Precio unitario: $
+                      {(
+                        detalle.precio_unitario ||
+                        detalle.precioUnitario ||
+                        0
+                      ).toLocaleString()}
                     </span>
                   </div>
-                 
                 </div>
                 <div className="producto-precio-container">
-                  
                   <div className="subtotal-section">
                     <span className="subtotal-label">Subtotal</span>
-                    <span className="subtotal-valor">${calcularSubtotal(detalle).toLocaleString()}</span>
+                    <span className="subtotal-valor">
+                      ${calcularSubtotal(detalle).toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -154,16 +155,23 @@ function DetalleOrden() {
           </div>
           <div className="resumen-linea">
             <span>Total de items:</span>
-            <span>{detalles.reduce((total, detalle) => total + (detalle.cantidad || 0), 0)}</span>
+            <span>
+              {detalles.reduce(
+                (total, detalle) => total + (detalle.cantidad || 0),
+                0
+              )}
+            </span>
           </div>
           <div className="resumen-linea total">
             <span>Total:</span>
-            <span className="total-monto">${(orden.total || 0).toLocaleString()}</span>
+            <span className="total-monto">
+              ${(orden.total || 0).toLocaleString()}
+            </span>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default DetalleOrden
+export default DetalleOrden;

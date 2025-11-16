@@ -1,63 +1,71 @@
-"use client"
+"use client";
 
-import { useContext, useState } from "react"
-import { CartContext } from "../../context/CartContext"
-import { ordenesDeCompraAPI, detallesOrdenAPI } from "../../services/api"
-import ItemCart from "./itemCart"
-import { Link, useNavigate } from "react-router-dom"
-import "./ItemCartContainer.css"
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import {
+  selectCartItems,
+  selectCartItemsCount,
+  clearCart,
+} from "../../redux/cartSlice";
+import { crearOrden } from "../../redux/ordenesSlice";
+import { selectIsAuthenticated, selectUser } from "../../redux/authSlice";
+import ItemCart from "./itemCart";
+import { Link, useNavigate } from "react-router-dom";
+import "./ItemCartContainer.css";
 
 const ItemCartContainer = () => {
-  const { cartItems, deleteAll, productsLength } = useContext(CartContext)
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const cartItems = useSelector(selectCartItems);
+  const productsLength = useSelector(selectCartItemsCount);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const total = cartItems.reduce((previous, current) => previous + Number(current.precio) * Number(current.amount), 0)
+  const total = cartItems.reduce(
+    (previous, current) =>
+      previous + Number(current.precio) * Number(current.amount),
+    0
+  );
 
   const handleComprar = async () => {
-    const usuarioLogueado = localStorage.getItem("usuarioLogueado")
-
-    if (!usuarioLogueado) {
-      alert("❌ Debes iniciar sesión para realizar una compra.")
-      navigate("/login")
-      return
+    if (!isAuthenticated || !user) {
+      alert("❌ Debes iniciar sesión para realizar una compra.");
+      navigate("/login");
+      return;
     }
 
     if (cartItems.length === 0) {
-      alert("❌ El carrito está vacío.")
-      return
+      alert("❌ El carrito está vacío.");
+      return;
     }
 
     try {
-      setLoading(true)
+      setLoading(true);
 
-      const ordenCreada = await ordenesDeCompraAPI.create({})
+      const items = cartItems.map((item) => ({
+        id: item.id,
+        quantity: item.amount,
+        precio: Number(item.precio),
+      }));
 
-      for (const item of cartItems) {
-        const detalleData = {
-          ordenDeCompraId: ordenCreada.id,
-          productoId: item.id,
-          cantidad: item.amount,
-          precioUnitario: Number(item.precio),
-        }
-        await detallesOrdenAPI.create(detalleData)
-      }
-
-      const ordenFinal = await ordenesDeCompraAPI.getById(ordenCreada.id)
+      const ordenFinal = await dispatch(crearOrden({ items })).unwrap();
 
       alert(
-        `✅ ¡Compra realizada con éxito!\n\nOrden #${ordenFinal.id}\nTotal: $${ordenFinal.total.toLocaleString()}\nProductos: ${productsLength}`,
-      )
+        `✅ ¡Compra realizada con éxito!\n\nOrden #${
+          ordenFinal.id
+        }\nTotal: $${ordenFinal.total.toLocaleString()}\nProductos: ${productsLength}`
+      );
 
-      deleteAll()
-      navigate("/compras")
+      dispatch(clearCart());
+      navigate("/compras");
     } catch (error) {
-      console.error("Error al procesar la compra:", error)
-      alert(`❌ Error al procesar la compra: ${error.message}`)
+      console.error("Error al procesar la compra:", error);
+      alert(`❌ Error al procesar la compra: ${error.message}`);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <main className="cart-main">
@@ -70,7 +78,7 @@ const ItemCartContainer = () => {
       ) : (
         <div>
           <div className="cart-container">
-            <button onClick={deleteAll} disabled={loading}>
+            <button onClick={() => dispatch(clearCart())} disabled={loading}>
               Vaciar carrito
             </button>
             <div className="cart-items">
@@ -89,7 +97,7 @@ const ItemCartContainer = () => {
         </div>
       )}
     </main>
-  )
-}
+  );
+};
 
-export default ItemCartContainer
+export default ItemCartContainer;

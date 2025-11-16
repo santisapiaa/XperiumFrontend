@@ -1,21 +1,39 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCategorias } from "../../../redux/categoriasSlice";
 
 function CategoryFilter({ categories, onFilterChange, resetKey }) {
-  const [isOpen, setIsOpen] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState(null)
+  const [isOpen, setIsOpen] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const dispatch = useDispatch();
+
+  const categoriasFromRedux = useSelector(
+    (state) => state.categorias.items || []
+  );
+  const categoriasToUse =
+    categories || categoriasFromRedux.map((cat) => cat.nombre);
+
+  useEffect(() => {
+    if (
+      !categories &&
+      (!categoriasFromRedux || categoriasFromRedux.length === 0)
+    ) {
+      dispatch(fetchCategorias());
+    }
+  }, [categories, categoriasFromRedux.length, dispatch]);
 
   useEffect(() => {
     if (resetKey > 0) {
-      setSelectedCategory(null)
+      setSelectedCategory(null);
     }
-  }, [resetKey])
+  }, [resetKey]);
 
   const handleCategoryFilter = (category) => {
-    setSelectedCategory(category)
-    onFilterChange({ category })
-  }
+    setSelectedCategory(category);
+    onFilterChange({ category });
+  };
 
   return (
     <div className="filter-section">
@@ -31,7 +49,7 @@ function CategoryFilter({ categories, onFilterChange, resetKey }) {
       </div>
       {isOpen && (
         <div className="section-content">
-          {categories.map((category, index) => (
+          {categoriasToUse.map((category, index) => (
             <label key={index}>
               <input
                 type="radio"
@@ -45,7 +63,7 @@ function CategoryFilter({ categories, onFilterChange, resetKey }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default CategoryFilter
+export default CategoryFilter;

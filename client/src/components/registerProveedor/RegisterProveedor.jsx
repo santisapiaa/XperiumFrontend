@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { authAPI } from "../../services/api"
-import "./RegisterProveedor.css"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { registerProveedor, login } from "../../redux/authSlice";
+import "./RegisterProveedor.css";
 
 function RegisterProveedor() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { loading } = useSelector((state) => state.auth);
 
   const [userData, setUserData] = useState({
     nombre: "",
@@ -14,31 +18,33 @@ function RegisterProveedor() {
     telefono: "",
     contrasenia: "",
     confirmPassword: "",
-  })
+  });
 
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value })
-    if (error) setError("")
-  }
+    setUserData({ ...userData, [e.target.name]: e.target.value });
+    if (error) setError("");
+  };
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
-    if (!userData.nombre || !userData.email || !userData.telefono || !userData.contrasenia) {
-      setError("Por favor, completá todos los campos.")
-      return
+    if (
+      !userData.nombre ||
+      !userData.email ||
+      !userData.telefono ||
+      !userData.contrasenia
+    ) {
+      setError("Por favor, completá todos los campos.");
+      return;
     }
 
     if (userData.contrasenia !== userData.confirmPassword) {
-      setError("Las contraseñas no coinciden.")
-      return
+      setError("Las contraseñas no coinciden.");
+      return;
     }
-
-    setLoading(true)
 
     try {
       const nuevoProveedor = {
@@ -46,19 +52,31 @@ function RegisterProveedor() {
         email: userData.email,
         telefono: userData.telefono,
         contrasenia: userData.contrasenia,
+      };
+
+      await dispatch(registerProveedor(nuevoProveedor)).unwrap();
+
+      alert("Proveedor registrado correctamente.");
+
+      // Hacer login automático
+      const result = await dispatch(
+        login({
+          email: userData.email,
+          contrasenia: userData.contrasenia,
+        })
+      ).unwrap();
+
+      // Redirigir a página de proveedor
+      if (result.rol === "PROVEEDOR") {
+        navigate("/proveedor");
+      } else {
+        navigate("/login");
       }
-
-      await authAPI.registerProveedor(nuevoProveedor)
-
-      alert("Proveedor registrado correctamente.")
-      navigate("/login")
     } catch (error) {
-      console.error("Error al registrar proveedor:", error)
-      setError(error.message || "Error al registrar proveedor.")
-    } finally {
-      setLoading(false)
+      console.error("Error al registrar proveedor:", error);
+      setError(error || "Error al registrar proveedor.");
     }
-  }
+  };
 
   return (
     <div className="register-proveedor-container">
@@ -68,7 +86,13 @@ function RegisterProveedor() {
         {error && <div className="error-message">{error}</div>}
 
         <form className="register-proveedor-form" onSubmit={handleRegister}>
-          <input type="text" name="nombre" placeholder="Nombre" value={userData.nombre} onChange={handleChange} />
+          <input
+            type="text"
+            name="nombre"
+            placeholder="Nombre"
+            value={userData.nombre}
+            onChange={handleChange}
+          />
           <input
             type="email"
             name="email"
@@ -76,7 +100,13 @@ function RegisterProveedor() {
             value={userData.email}
             onChange={handleChange}
           />
-          <input type="tel" name="telefono" placeholder="Teléfono" value={userData.telefono} onChange={handleChange} />
+          <input
+            type="tel"
+            name="telefono"
+            placeholder="Teléfono"
+            value={userData.telefono}
+            onChange={handleChange}
+          />
           <input
             type="password"
             name="contrasenia"
@@ -102,8 +132,8 @@ function RegisterProveedor() {
           <a
             href="#"
             onClick={(e) => {
-              e.preventDefault()
-              navigate("/login")
+              e.preventDefault();
+              navigate("/login");
             }}
           >
             Iniciar sesión
@@ -111,7 +141,7 @@ function RegisterProveedor() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
-export default RegisterProveedor
+export default RegisterProveedor;

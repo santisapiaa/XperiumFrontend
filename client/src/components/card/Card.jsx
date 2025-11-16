@@ -1,19 +1,29 @@
-"use client"
+"use client";
 
-import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
-import "./Card.css"
-import { CartContext } from "../../context/CartContext"
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import "./Card.css";
+import { addToCart } from "../../redux/cartSlice";
 
-function Card({ id, nombre, descripcion, precio, imagen_url, ubicacion, cant_personas, stock, descuento }) {
-  const { addToCart } = useContext(CartContext)
-  const navigate = useNavigate()
+function Card({
+  id,
+  nombre,
+  descripcion,
+  precio,
+  imagen_url,
+  ubicacion,
+  cant_personas,
+  stock,
+  descuento,
+}) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const precioOriginal = descuento > 0 ? precio / (1 - descuento / 100) : null
+  const precioOriginal = descuento > 0 ? precio / (1 - descuento / 100) : null;
 
   const handleCardClick = (e) => {
     if (e.target.closest(".btn-agregar-al-carrito")) {
-      return
+      return;
     }
     navigate(`/producto/${id}`, {
       state: {
@@ -29,11 +39,15 @@ function Card({ id, nombre, descripcion, precio, imagen_url, ubicacion, cant_per
           descuento,
         },
       },
-    })
-  }
+    });
+  };
 
   return (
-    <div className="card" onClick={handleCardClick} style={{ cursor: "pointer" }}>
+    <div
+      className="card"
+      onClick={handleCardClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className="card-image-container">
         {descuento > 0 && <div className="discount-badge">-{descuento}%</div>}
         <img src={imagen_url || "/placeholder.svg"} alt={nombre} />
@@ -50,31 +64,37 @@ function Card({ id, nombre, descripcion, precio, imagen_url, ubicacion, cant_per
 
       <div className="card-footer-container">
         <div className="precio-container">
-          {descuento > 0 && <span className="precio-original">${precioOriginal.toLocaleString()}</span>}
+          {descuento > 0 && (
+            <span className="precio-original">
+              ${precioOriginal.toLocaleString()}
+            </span>
+          )}
           <span className="precio">${precio.toLocaleString()}</span>
         </div>
         <span className="personas">{cant_personas} personas</span>
         <button
           className="btn-agregar-al-carrito"
           onClick={() =>
-            addToCart({
-              id,
-              nombre,
-              descripcion,
-              precio,
-              imagen_url,
-              ubicacion,
-              cant_personas,
-              stock,
-              amount: 1,
-            })
+            dispatch(
+              addToCart({
+                id,
+                nombre,
+                descripcion,
+                precio,
+                imagen_url,
+                ubicacion,
+                cant_personas,
+                stock,
+                amount: 1,
+              })
+            )
           }
         >
           +
         </button>
       </div>
     </div>
-  )
+  );
 }
 
-export default Card
+export default Card;

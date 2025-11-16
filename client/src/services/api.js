@@ -1,65 +1,64 @@
-const API_BASE_URL = "/api"
+const API_BASE_URL = "/api";
 
+import { getCurrentToken } from "./tokenStore";
+
+// Helper function to get token from token store
 const getAuthToken = () => {
-  const usuario = localStorage.getItem("usuarioLogueado")
-  if (usuario) {
-    const parsed = JSON.parse(usuario)
-    return parsed.access_token
-  }
-  return null
-}
+  return getCurrentToken();
+};
 
 const createHeaders = (includeAuth = true) => {
   const headers = {
     "Content-Type": "application/json",
-  }
+  };
 
   if (includeAuth) {
-    const token = getAuthToken()
+    const token = getAuthToken();
     if (token) {
-      headers["Authorization"] = `Bearer ${token}`
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
 
-  return headers
-}
+  return headers;
+};
 
 const handleFetchError = async (response, defaultMessage) => {
   if (!response.ok) {
-    let errorMessage = defaultMessage
+    let errorMessage = defaultMessage;
 
     try {
-      const contentType = response.headers.get("content-type")
+      const contentType = response.headers.get("content-type");
 
       if (contentType && contentType.includes("application/json")) {
-        const text = await response.text()
+        const text = await response.text();
         if (text) {
-          const errorData = JSON.parse(text)
-          errorMessage = errorData.message || errorData.error || defaultMessage
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.message || errorData.error || defaultMessage;
         }
       } else {
-        const text = await response.text()
+        const text = await response.text();
         if (text) {
-          errorMessage = text
+          errorMessage = text;
         }
       }
     } catch (e) {
-      console.error("Error parsing error response:", e)
+      console.error("Error parsing error response:", e);
     }
 
     if (response.status === 403) {
-      errorMessage = "Acceso denegado. Verifica que tengas permisos o que tu sesión no haya expirado."
+      errorMessage =
+        "Acceso denegado. Verifica que tengas permisos o que tu sesión no haya expirado.";
     } else if (response.status === 401) {
-      errorMessage = "No autorizado. Por favor, inicia sesión nuevamente."
+      errorMessage = "No autorizado. Por favor, inicia sesión nuevamente.";
     } else if (response.status === 404) {
-      errorMessage = "Recurso no encontrado."
+      errorMessage = "Recurso no encontrado.";
     } else if (response.status === 500) {
-      errorMessage = `Error del servidor: ${errorMessage}`
+      errorMessage = `Error del servidor: ${errorMessage}`;
     }
 
-    throw new Error(errorMessage)
+    throw new Error(errorMessage);
   }
-}
+};
 
 // ============ AUTENTICACIÓN ============
 
@@ -70,18 +69,18 @@ export const authAPI = {
         method: "POST",
         headers: createHeaders(false),
         body: JSON.stringify({ email, contrasenia }),
-      })
+      });
 
-      await handleFetchError(response, "Error al iniciar sesión")
-      const responseData = await response.json()
-      return responseData
+      await handleFetchError(response, "Error al iniciar sesión");
+      const responseData = await response.json();
+      return responseData;
     } catch (error) {
       if (error.message === "Failed to fetch") {
         throw new Error(
-          "No se puede conectar al servidor. Verifica que el backend esté corriendo en http://localhost:4002 y que tenga CORS configurado",
-        )
+          "No se puede conectar al servidor. Verifica que el backend esté corriendo en http://localhost:4002 y que tenga CORS configurado"
+        );
       }
-      throw error
+      throw error;
     }
   },
 
@@ -91,18 +90,18 @@ export const authAPI = {
         method: "POST",
         headers: createHeaders(false),
         body: JSON.stringify(userData),
-      })
+      });
 
-      await handleFetchError(response, "Error al registrar usuario")
-      const responseData = await response.json()
-      return responseData
+      await handleFetchError(response, "Error al registrar usuario");
+      const responseData = await response.json();
+      return responseData;
     } catch (error) {
       if (error.message === "Failed to fetch") {
         throw new Error(
-          "No se puede conectar al servidor. Posibles causas:\n1. El backend no está corriendo en http://localhost:4002\n2. El backend no tiene CORS configurado para permitir requests desde http://localhost:5173\n3. Firewall bloqueando la conexión",
-        )
+          "No se puede conectar al servidor. Posibles causas:\n1. El backend no está corriendo en http://localhost:4002\n2. El backend no tiene CORS configurado para permitir requests desde http://localhost:5173\n3. Firewall bloqueando la conexión"
+        );
       }
-      throw error
+      throw error;
     }
   },
 
@@ -112,52 +111,61 @@ export const authAPI = {
         method: "POST",
         headers: createHeaders(false),
         body: JSON.stringify(userData),
-      })
+      });
 
-      await handleFetchError(response, "Error al registrar proveedor")
-      const responseData = await response.json()
-      return responseData
+      await handleFetchError(response, "Error al registrar proveedor");
+      const responseData = await response.json();
+      return responseData;
     } catch (error) {
       if (error.message === "Failed to fetch") {
         throw new Error(
-          "No se puede conectar al servidor. Posibles causas:\n1. El backend no está corriendo en http://localhost:4002\n2. El backend no tiene CORS configurado para permitir requests desde http://localhost:5173\n3. Firewall bloqueando la conexión",
-        )
+          "No se puede conectar al servidor. Posibles causas:\n1. El backend no está corriendo en http://localhost:4002\n2. El backend no tiene CORS configurado para permitir requests desde http://localhost:5173\n3. Firewall bloqueando la conexión"
+        );
       }
-      throw error
+      throw error;
     }
   },
-}
+};
 
 // ============ PRODUCTOS ============
 
 export const productosAPI = {
   getAll: async (page = 0, size = 100) => {
-    const response = await fetch(`${API_BASE_URL}/productos?page=${page}&size=${size}`, {
-      headers: createHeaders(false),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/productos?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(false),
+      }
+    );
 
-    await handleFetchError(response, "Error al obtener productos")
-    return response.json()
+    await handleFetchError(response, "Error al obtener productos");
+    return response.json();
   },
 
   getById: async (id) => {
     const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
       headers: createHeaders(false),
-    })
+    });
 
-    await handleFetchError(response, "Error al obtener producto")
-    return response.json()
+    await handleFetchError(response, "Error al obtener producto");
+    return response.json();
   },
 
   getByCategoria: async (categoriaId, page = 0, size = 100) => {
-    const response = await fetch(`${API_BASE_URL}/productos/${categoriaId}/categoria?page=${page}&size=${size}`, {
-      headers: createHeaders(false),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/productos/${categoriaId}/categoria?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(false),
+      }
+    );
 
-    await handleFetchError(response, "Error al obtener productos por categoría")
-    return response.json()
+    await handleFetchError(
+      response,
+      "Error al obtener productos por categoría"
+    );
+    return response.json();
   },
-}
+};
 
 // ============ COMPRADORES ============
 
@@ -165,19 +173,19 @@ export const compradoresAPI = {
   getMiCuenta: async (token = null) => {
     const headers = {
       "Content-Type": "application/json",
-    }
+    };
 
-    const authToken = token || getAuthToken()
+    const authToken = token || getAuthToken();
     if (authToken) {
-      headers["Authorization"] = `Bearer ${authToken}`
+      headers["Authorization"] = `Bearer ${authToken}`;
     }
 
     const response = await fetch(`${API_BASE_URL}/compradores/micuenta`, {
       headers,
-    })
+    });
 
-    await handleFetchError(response, "Error al obtener cuenta")
-    return response.json()
+    await handleFetchError(response, "Error al obtener cuenta");
+    return response.json();
   },
 
   update: async (id, userData) => {
@@ -185,23 +193,26 @@ export const compradoresAPI = {
       method: "PUT",
       headers: createHeaders(true),
       body: JSON.stringify(userData),
-    })
+    });
 
-    await handleFetchError(response, "Error al actualizar usuario")
-    return response.json()
+    await handleFetchError(response, "Error al actualizar usuario");
+    return response.json();
   },
-}
+};
 
 // ============ DIRECCIONES ============
 
 export const direccionesAPI = {
   getAll: async (page = 0, size = 10) => {
-    const response = await fetch(`${API_BASE_URL}/direcciones?page=${page}&size=${size}`, {
-      headers: createHeaders(true),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/direcciones?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(true),
+      }
+    );
 
-    await handleFetchError(response, "Error al obtener direcciones")
-    return response.json()
+    await handleFetchError(response, "Error al obtener direcciones");
+    return response.json();
   },
 
   create: async (direccionData) => {
@@ -209,10 +220,10 @@ export const direccionesAPI = {
       method: "POST",
       headers: createHeaders(true),
       body: JSON.stringify(direccionData),
-    })
+    });
 
-    await handleFetchError(response, "Error al crear dirección")
-    return response.json()
+    await handleFetchError(response, "Error al crear dirección");
+    return response.json();
   },
 
   update: async (id, direccionData) => {
@@ -220,42 +231,45 @@ export const direccionesAPI = {
       method: "PUT",
       headers: createHeaders(true),
       body: JSON.stringify(direccionData),
-    })
+    });
 
-    await handleFetchError(response, "Error al actualizar dirección")
-    return response.json()
+    await handleFetchError(response, "Error al actualizar dirección");
+    return response.json();
   },
 
   delete: async (id) => {
     const response = await fetch(`${API_BASE_URL}/direcciones/${id}`, {
       method: "DELETE",
       headers: createHeaders(true),
-    })
+    });
 
-    await handleFetchError(response, "Error al eliminar dirección")
-    return response.ok
+    await handleFetchError(response, "Error al eliminar dirección");
+    return response.ok;
   },
-}
+};
 
 // ============ ÓRDENES DE COMPRA ============
 
 export const ordenesDeCompraAPI = {
   getAll: async (page = 0, size = 100) => {
-    const response = await fetch(`${API_BASE_URL}/ordenesDeCompra?page=${page}&size=${size}`, {
-      headers: createHeaders(true),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/ordenesDeCompra?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(true),
+      }
+    );
 
-    await handleFetchError(response, "Error al obtener órdenes")
-    return response.json()
+    await handleFetchError(response, "Error al obtener órdenes");
+    return response.json();
   },
 
   getById: async (id) => {
     const response = await fetch(`${API_BASE_URL}/ordenesDeCompra/${id}`, {
       headers: createHeaders(true),
-    })
+    });
 
-    await handleFetchError(response, "Error al obtener orden")
-    return response.json()
+    await handleFetchError(response, "Error al obtener orden");
+    return response.json();
   },
 
   create: async (ordenData) => {
@@ -263,12 +277,12 @@ export const ordenesDeCompraAPI = {
       method: "POST",
       headers: createHeaders(true),
       body: JSON.stringify(ordenData),
-    })
+    });
 
-    await handleFetchError(response, "Error al crear orden")
-    return response.json()
+    await handleFetchError(response, "Error al crear orden");
+    return response.json();
   },
-}
+};
 
 // ============ DETALLES DE ORDEN ============
 
@@ -278,25 +292,28 @@ export const detallesOrdenAPI = {
       method: "POST",
       headers: createHeaders(true),
       body: JSON.stringify(detalleData),
-    })
+    });
 
-    await handleFetchError(response, "Error al agregar producto a orden")
-    return response.json()
+    await handleFetchError(response, "Error al agregar producto a orden");
+    return response.json();
   },
-}
+};
 
 // ============ CATEGORÍAS ============
 
 export const categoriasAPI = {
   getAll: async (page = 0, size = 100) => {
-    const response = await fetch(`${API_BASE_URL}/categorias?page=${page}&size=${size}`, {
-      headers: createHeaders(false),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/categorias?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(false),
+      }
+    );
 
-    await handleFetchError(response, "Error al obtener categorías")
-    return response.json()
+    await handleFetchError(response, "Error al obtener categorías");
+    return response.json();
   },
-}
+};
 
 // ============ PROVEEDORES ============
 
@@ -304,28 +321,31 @@ export const proveedoresAPI = {
   getMiCuenta: async (token = null) => {
     const headers = {
       "Content-Type": "application/json",
-    }
+    };
 
-    const authToken = token || getAuthToken()
+    const authToken = token || getAuthToken();
     if (authToken) {
-      headers["Authorization"] = `Bearer ${authToken}`
+      headers["Authorization"] = `Bearer ${authToken}`;
     }
 
     const response = await fetch(`${API_BASE_URL}/proveedores/micuenta`, {
       headers,
-    })
+    });
 
-    await handleFetchError(response, "Error al obtener cuenta de proveedor")
-    return response.json()
+    await handleFetchError(response, "Error al obtener cuenta de proveedor");
+    return response.json();
   },
 
   getMisProductos: async (page = 0, size = 100) => {
-    const response = await fetch(`${API_BASE_URL}/productos/misproductos?page=${page}&size=${size}`, {
-      headers: createHeaders(true),
-    })
+    const response = await fetch(
+      `${API_BASE_URL}/productos/misproductos?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(true),
+      }
+    );
 
-    await handleFetchError(response, "Error al obtener mis productos")
-    return response.json()
+    await handleFetchError(response, "Error al obtener mis productos");
+    return response.json();
   },
 
   createProducto: async (productoData) => {
@@ -333,26 +353,26 @@ export const proveedoresAPI = {
       method: "POST",
       headers: createHeaders(true),
       body: JSON.stringify(productoData),
-    })
+    });
 
-    await handleFetchError(response, "Error al crear producto")
+    await handleFetchError(response, "Error al crear producto");
 
     if (response.ok) {
-      const contentType = response.headers.get("content-type")
+      const contentType = response.headers.get("content-type");
 
       if (contentType && contentType.includes("application/json")) {
-        return response.json()
+        return response.json();
       }
 
-      const text = await response.text()
+      const text = await response.text();
       return {
         success: true,
         message: text || "Producto creado exitosamente",
         id: null,
-      }
+      };
     }
 
-    throw new Error("Error al crear producto")
+    throw new Error("Error al crear producto");
   },
 
   updateProducto: async (id, productoData) => {
@@ -360,19 +380,19 @@ export const proveedoresAPI = {
       method: "PUT",
       headers: createHeaders(true),
       body: JSON.stringify(productoData),
-    })
+    });
 
-    await handleFetchError(response, "Error al actualizar producto")
-    return response.json()
+    await handleFetchError(response, "Error al actualizar producto");
+    return response.json();
   },
 
   deleteProducto: async (id) => {
     const response = await fetch(`${API_BASE_URL}/productos/${id}`, {
       method: "DELETE",
       headers: createHeaders(true),
-    })
+    });
 
-    await handleFetchError(response, "Error al eliminar producto")
-    return response.ok
+    await handleFetchError(response, "Error al eliminar producto");
+    return response.ok;
   },
-}
+};

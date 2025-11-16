@@ -1,27 +1,23 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout, setUser } from "../../redux/authSlice";
 
 function UsuarioLogueado() {
-  const [usuario, setUsuario] = useState(null)
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const usuarioGuardado = localStorage.getItem("usuarioLogueado")
-    if (usuarioGuardado) {
-      const datosUsuario = JSON.parse(usuarioGuardado)
-      setUsuario(datosUsuario)
-    }
-  }, [])
+  const user = useSelector((state) => state.auth.user);
 
-  if (!usuario) return null
+  if (!user) return null;
 
   const handleLogout = () => {
-    localStorage.removeItem("usuarioLogueado")
-    alert("👋 Sesión cerrada correctamente")
-    navigate("/login")
-  }
+    dispatch(logout());
+    alert("👋 Sesión cerrada correctamente");
+    navigate("/login");
+  };
 
   return (
     <div
@@ -39,7 +35,7 @@ function UsuarioLogueado() {
         fontWeight: "500",
       }}
     >
-      👋 Hola, {usuario.nombre}
+      👋 Hola, {user.nombre}
       <button
         onClick={handleLogout}
         style={{
@@ -54,7 +50,7 @@ function UsuarioLogueado() {
         Cerrar sesión
       </button>
     </div>
-  )
+  );
 }
 
-export default UsuarioLogueado
+export default UsuarioLogueado;
