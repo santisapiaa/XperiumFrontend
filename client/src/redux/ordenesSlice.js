@@ -27,7 +27,7 @@ export const fetchOrdenById = createAsyncThunk(
 
 export const crearOrden = createAsyncThunk(
   "ordenes/crearOrden",
-  async ({ items, userId }, { rejectWithValue }) => {
+  async ({ items, metodoPago, detalleMetodoPago }, { rejectWithValue }) => {
     try {
       // Crear la orden vacía primero
       const ordenCreada = await ordenesDeCompraAPI.create({});
@@ -46,9 +46,11 @@ export const crearOrden = createAsyncThunk(
         await detallesOrdenAPI.create(detalleData);
       }
 
-      // Obtener la orden completa con sus detalles
+      // For now, storing locally; backend can be updated to persist payment info
       const ordenFinal = await ordenesDeCompraAPI.getById(ordenCreada.id);
       console.log("Orden final:", ordenFinal);
+      console.log("Método de pago:", metodoPago, detalleMetodoPago);
+      
       return ordenFinal;
     } catch (error) {
       console.error("Error en crearOrden:", error);
@@ -56,6 +58,7 @@ export const crearOrden = createAsyncThunk(
     }
   }
 );
+
 const ordenesSlice = createSlice({
   name: "ordenes",
   initialState: {

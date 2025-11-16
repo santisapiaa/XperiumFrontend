@@ -10,6 +10,7 @@ import {
   eliminarDireccion,
 } from "../../redux/direccionesSlice";
 import { compradoresAPI } from "../../services/api";
+import { TarjetasSection } from "../tarjetasSection/TarjetasSection";
 import "./PerfilUser.css";
 
 const PerfilUser = () => {
@@ -218,14 +219,7 @@ const PerfilUser = () => {
       </section>
 
       <section className="perfil-panel perfil-pago">
-        <div className="perfil-panel-header">
-          <h3>Métodos de Pago</h3>
-        </div>
-        <div className="perfil-panel-body">
-          <a href="#" className="perfil-link">
-            +Nueva Tarjeta
-          </a>
-        </div>
+        <TarjetasSection />
       </section>
 
       <section className="perfil-panel perfil-direccion">

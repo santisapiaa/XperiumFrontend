@@ -299,6 +299,54 @@ export const detallesOrdenAPI = {
   },
 };
 
+// ============ TARJETAS ============
+
+export const tarjetasAPI = {
+  getAll: async (page = 0, size = 10) => {
+    const response = await fetch(
+      `${API_BASE_URL}/tarjetas?page=${page}&size=${size}`,
+      {
+        headers: createHeaders(true),
+      }
+    );
+
+    await handleFetchError(response, "Error al obtener tarjetas");
+    return response.json();
+  },
+
+  create: async (tarjetaData) => {
+    const response = await fetch(`${API_BASE_URL}/tarjetas`, {
+      method: "POST",
+      headers: createHeaders(true),
+      body: JSON.stringify(tarjetaData),
+    });
+
+    await handleFetchError(response, "Error al crear tarjeta");
+    return response.json();
+  },
+
+  update: async (id, tarjetaData) => {
+    const response = await fetch(`${API_BASE_URL}/tarjetas/${id}`, {
+      method: "PUT",
+      headers: createHeaders(true),
+      body: JSON.stringify(tarjetaData),
+    });
+
+    await handleFetchError(response, "Error al actualizar tarjeta");
+    return response.json();
+  },
+
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/tarjetas/${id}`, {
+      method: "DELETE",
+      headers: createHeaders(true),
+    });
+
+    await handleFetchError(response, "Error al eliminar tarjeta");
+    return response.ok;
+  },
+};
+
 // ============ CATEGORÍAS ============
 
 export const categoriasAPI = {

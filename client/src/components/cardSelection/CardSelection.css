@@ -1,0 +1,134 @@
+.card-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.card-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-option:hover {
+  border-color: #3b82f6;
+  background-color: #f0f7ff;
+}
+
+.card-option input[type="radio"] {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.card-option-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.card-icon {
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.card-details {
+  flex: 1;
+}
+
+.card-holder {
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.card-number {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0.25rem 0;
+}
+
+.card-last-digits {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.btn-add-card,
+.btn-add-card-primary {
+  padding: 0.75rem 1rem;
+  border: 2px dashed #3b82f6;
+  background-color: transparent;
+  color: #3b82f6;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add-card:hover,
+.btn-add-card-primary:hover {
+  background-color: #f0f7ff;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.btn-add-card-primary {
+  border: 2px solid #3b82f6;
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn-add-card-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.card-selection-form {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0;
+}
+
+.btn-back:hover {
+  color: #2563eb;
+}
+
+.form-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1a202c;
+}

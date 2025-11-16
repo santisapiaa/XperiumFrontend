@@ -40,31 +40,7 @@ const ItemCartContainer = () => {
       return;
     }
 
-    try {
-      setLoading(true);
-
-      const items = cartItems.map((item) => ({
-        id: item.id,
-        quantity: item.amount,
-        precio: Number(item.precio),
-      }));
-
-      const ordenFinal = await dispatch(crearOrden({ items })).unwrap();
-
-      alert(
-        `✅ ¡Compra realizada con éxito!\n\nOrden #${
-          ordenFinal.id
-        }\nTotal: $${ordenFinal.total.toLocaleString()}\nProductos: ${productsLength}`
-      );
-
-      dispatch(clearCart());
-      navigate("/compras");
-    } catch (error) {
-      console.error("Error al procesar la compra:", error);
-      alert(`❌ Error al procesar la compra: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
+    navigate("/checkout");
   };
 
   return (

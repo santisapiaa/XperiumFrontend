@@ -1,0 +1,82 @@
+.order-summary {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.order-summary h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  color: #1a202c;
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.item-name {
+  color: #1a202c;
+  font-weight: 500;
+}
+
+.item-price {
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 1rem 0;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  color: #4b5563;
+}
+
+.free-shipping {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.coupon-text {
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.coupon-text:hover {
+  color: #2563eb;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-top: 1rem;
+}
+
+.total-amount {
+  color: #3b82f6;
+  font-size: 1.25rem;
+}

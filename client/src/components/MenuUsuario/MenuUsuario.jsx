@@ -10,6 +10,16 @@ function MenuUsuario({ onClose }) {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.user);
+  const userData = useSelector((state) => state.auth.userData);
+
+  const displayUser = userData || user;
+
+  useEffect(() => {
+    // Handle user data loading delays here
+    if (userData) {
+      dispatch(setUser(userData));
+    }
+  }, [userData, dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -38,53 +48,6 @@ function MenuUsuario({ onClose }) {
     if (onClose) onClose();
   };
 
-  if (!user) {
-    return (
-      <div
-        style={{
-          position: "absolute",
-          top: "60px",
-          right: "0",
-          zIndex: "999",
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          width: "180px",
-          padding: "10px 0",
-        }}
-      >
-        <button
-          onClick={handleLogin}
-          style={{
-            width: "100%",
-            border: "none",
-            background: "none",
-            padding: "10px 15px",
-            textAlign: "left",
-            cursor: "pointer",
-            fontWeight: "500",
-          }}
-        >
-          🔐 Iniciar sesión
-        </button>
-        <button
-          onClick={handleRegister}
-          style={{
-            width: "100%",
-            border: "none",
-            background: "none",
-            padding: "10px 15px",
-            textAlign: "left",
-            cursor: "pointer",
-          }}
-        >
-          📝 Registrate
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div
       style={{
@@ -100,56 +63,90 @@ function MenuUsuario({ onClose }) {
         padding: "10px 0",
       }}
     >
-      <p
-        style={{
-          margin: "0",
-          padding: "8px 15px",
-          fontWeight: "500",
-          borderBottom: "1px solid #eee",
-        }}
-      >
-        Hola, {user.nombre}
-      </p>
-      <button
-        onClick={handlePerfil}
-        style={{
-          width: "100%",
-          border: "none",
-          background: "none",
-          padding: "10px 15px",
-          textAlign: "left",
-          cursor: "pointer",
-        }}
-      >
-        👀 Ver perfil
-      </button>
-      <button
-        onClick={handleCompras}
-        style={{
-          width: "100%",
-          border: "none",
-          background: "none",
-          padding: "10px 15px",
-          textAlign: "left",
-          cursor: "pointer",
-        }}
-      >
-        🛍️ Mis compras
-      </button>
-      <button
-        onClick={handleLogout}
-        style={{
-          width: "100%",
-          border: "none",
-          background: "none",
-          padding: "10px 15px",
-          textAlign: "left",
-          cursor: "pointer",
-          color: "red",
-        }}
-      >
-        🚪 Cerrar sesión
-      </button>
+      {!displayUser ? (
+        <>
+          <button
+            onClick={handleLogin}
+            style={{
+              width: "100%",
+              border: "none",
+              background: "none",
+              padding: "10px 15px",
+              textAlign: "left",
+              cursor: "pointer",
+              fontWeight: "500",
+            }}
+          >
+            🔐 Iniciar sesión
+          </button>
+          <button
+            onClick={handleRegister}
+            style={{
+              width: "100%",
+              border: "none",
+              background: "none",
+              padding: "10px 15px",
+              textAlign: "left",
+              cursor: "pointer",
+            }}
+          >
+            📝 Registrate
+          </button>
+        </>
+      ) : (
+        <>
+          <p
+            style={{
+              margin: "0",
+              padding: "8px 15px",
+              fontWeight: "500",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            Hola, {displayUser.nombre}
+          </p>
+          <button
+            onClick={handlePerfil}
+            style={{
+              width: "100%",
+              border: "none",
+              background: "none",
+              padding: "10px 15px",
+              textAlign: "left",
+              cursor: "pointer",
+            }}
+          >
+            👀 Ver perfil
+          </button>
+          <button
+            onClick={handleCompras}
+            style={{
+              width: "100%",
+              border: "none",
+              background: "none",
+              padding: "10px 15px",
+              textAlign: "left",
+              cursor: "pointer",
+            }}
+          >
+            🛍️ Mis compras
+          </button>
+          <button
+            onClick={handleLogout}
+            style={{
+              width: "100%",
+              border: "none",
+              background: "none",
+              padding: "10px 15px",
+              textAlign: "left",
+              cursor: "pointer",
+              color: "red",
+            }}
+          >
+            🚪 Cerrar sesión
+          </button>
+        </>
+      )}
     </div>
   );
 }

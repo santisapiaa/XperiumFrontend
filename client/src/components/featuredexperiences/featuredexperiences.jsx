@@ -81,7 +81,7 @@ function FeaturedExperiences() {
             nombre={product.nombre}
             descripcion={product.descripcion}
             precio={product.precio}
-            imagen_url={product.imagen_url}
+            imagen_url={product.imagen_url || product.imagenUrl}
             ubicacion={product.ubicacion}
             cant_personas={product.cant_personas}
             stock={product.stock}

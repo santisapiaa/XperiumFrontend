@@ -169,12 +169,11 @@ function ProveedorDashboard() {
         await dispatch(
           actualizarProductoThunk({ id: editingProduct.id, productoData })
         ).unwrap();
-        alert("Producto actualizado exitosamente");
       } else {
         await dispatch(crearProductoThunk(productoData)).unwrap();
-        alert("Producto creado exitosamente");
       }
 
+      await dispatch(fetchMisProductos()).unwrap();
       handleCloseModal();
     } catch (error) {
       console.error("Error saving producto:", error);
@@ -256,7 +255,7 @@ function ProveedorDashboard() {
                   src={
                     producto.imagenUrl ||
                     "/placeholder.svg?height=200&width=300"
-                  }
+                   || "/placeholder.svg"}
                   alt={producto.nombre}
                 />
                 <div className="producto-info">
