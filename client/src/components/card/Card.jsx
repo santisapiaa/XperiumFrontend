@@ -52,15 +52,15 @@ function Card({
         {descuento > 0 && <div className="discount-badge">-{descuento}%</div>}
         <img src={imagen_url || "/placeholder.svg"} alt={nombre} />
       </div>
-
       <div className="card-title-container">
         <h3>{nombre}</h3>
-        <span className="ubicacion">{ubicacion}</span>
+        
       </div>
 
       <div className="card-description-container">
         <p>{descripcion}</p>
       </div>
+      <div className="card-ubication-container"><span className="ubicacion">{ubicacion}</span></div>
 
       <div className="card-footer-container">
         <div className="precio-container">
