@@ -110,7 +110,13 @@ const PerfilUser = () => {
     try {
       setLoading(true);
       await dispatch(
-        updateUserProfile({ userId: user.id, userData: formularioPerfil })
+        updateUserProfile({ 
+          userId: user.id, 
+          userData: {
+            ...formularioPerfil,
+            email: user.email // Preserve email so it doesn't get deleted
+          }
+        })
       ).unwrap();
       cerrarFormularioPerfil();
       alert("Perfil actualizado exitosamente");

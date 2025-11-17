@@ -28,7 +28,6 @@ function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const result = await dispatch(
         login({
@@ -40,10 +39,7 @@ function Login() {
       const userName = result.userData?.nombre || result.nombre || "Usuario";
       const userRole = result.rol;
 
-      alert(`Bienvenido ${userName}! Has iniciado sesión correctamente.`);
-
-      console.log("Login result:", result);
-      console.log("User role:", userRole);
+      alert(`Bienvenido ${userName}!`);
 
       if (userRole === "PROVEEDOR") {
         navigate("/proveedor");
@@ -52,14 +48,7 @@ function Login() {
       }
     } catch (err) {
       console.error("Login error:", err);
-
-      if (err.includes("CORS") || err.includes("conectar al servidor")) {
-        alert(
-          "Error de conexión con el servidor. Asegúrate de haber configurado CORS globalmente en el backend (WebConfig)."
-        );
-      } else {
-        alert("Usuario o contraseña incorrectos.");
-      }
+      alert("Usuario o contraseña incorrectos.");
     }
   };
 
@@ -75,6 +64,7 @@ function Login() {
             type="email"
             name="email"
             placeholder="Correo electrónico"
+            value={loginData.email}
             onChange={handleChange}
             required
           />
@@ -82,6 +72,7 @@ function Login() {
             type="password"
             name="contrasenia"
             placeholder="Contraseña"
+            value={loginData.contrasenia}
             onChange={handleChange}
             required
           />
@@ -90,31 +81,31 @@ function Login() {
           </button>
         </form>
 
-        <p className="login-footer">
-          ¿No tenés cuenta?{" "}
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/register");
-            }}
-          >
-            Registrate
-          </a>
-        </p>
-
-        <p className="login-footer" style={{ marginTop: "8px" }}>
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("/register-proveedor");
-            }}
-            style={{ color: "#d946ef" }}
-          >
-            Soy Vendedor
-          </a>
-        </p>
+        <div className="login-footer">
+          <p>
+            ¿No tenés cuenta?{" "}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/register");
+              }}
+            >
+              Registrate
+            </a>
+          </p>
+          <p style={{ marginTop: "12px" }}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/register-proveedor");
+              }}
+            >
+              Soy Vendedor
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -131,9 +131,13 @@ export const registerProveedor = createAsyncThunk(
 
 export const updateUserProfile = createAsyncThunk(
   "auth/updateProfile",
-  async ({ userId, userData }) => {
-    await compradoresAPI.update(userId, userData);
-    return userData;
+  async ({ userId, userData }, { rejectWithValue }) => {
+    try {
+      const response = await compradoresAPI.update(userId, userData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
@@ -234,13 +238,16 @@ const authSlice = createSlice({
       })
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
+        if (state.user) {
+          state.user = { ...state.user, ...action.payload };
+        }
         if (state.userData) {
           state.userData = { ...state.userData, ...action.payload };
         }
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });

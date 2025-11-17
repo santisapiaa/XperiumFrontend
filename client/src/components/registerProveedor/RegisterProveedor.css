@@ -1,93 +1,132 @@
 .register-proveedor-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:#667eea;
+  padding: 1.5rem;
+  font-family: 'Roboto Slab', serif;
 }
 
 .register-proveedor-box {
   background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   width: 100%;
-  max-width: 400px;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .register-proveedor-box h1 {
   text-align: center;
-  margin-bottom: 30px;
+  margin: 0 0 1.8rem;
   color: #333;
-  font-size: 28px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .error-message {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 16px;
-  color: #c33;
-  font-size: 14px;
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #fecaca;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
   white-space: pre-line;
 }
 
 .register-proveedor-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.2rem;
 }
 
 .register-proveedor-form input {
-  padding: 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 0.3s;
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+  font-family: 'Roboto Slab', serif;
+  box-sizing: border-box;
 }
 
 .register-proveedor-form input:focus {
   outline: none;
   border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+.register-proveedor-form input::placeholder {
+  color: #aaa;
+  font-family: 'Roboto Slab', serif;
 }
 
 .register-proveedor-form button {
-  padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  width: 100%;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  background: #667eea;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  font-family: 'Roboto Slab', serif;
 }
 
 .register-proveedor-form button:hover:not(:disabled) {
+  background: #5a6fd8;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
 }
 
 .register-proveedor-form button:disabled {
-  opacity: 0.6;
+  background: #a0aec0;
   cursor: not-allowed;
+  transform: none;
 }
 
 .register-proveedor-footer {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
   color: #666;
-  font-size: 14px;
 }
 
 .register-proveedor-footer a {
   color: #667eea;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
 .register-proveedor-footer a:hover {
+  color: #5a6fd8;
   text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-proveedor-box {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+  }
+  .register-proveedor-box h1 {
+    font-size: 1.8rem;
+  }
 }
