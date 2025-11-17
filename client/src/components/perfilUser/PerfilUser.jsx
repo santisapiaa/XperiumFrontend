@@ -65,8 +65,7 @@ const PerfilUser = () => {
 
     if (
       !formularioDireccion.calle ||
-      !formularioDireccion.numero ||
-      !formularioDireccion.departamento
+      !formularioDireccion.numero
     ) {
       alert("Por favor, completá los campos obligatorios.");
       return;
@@ -183,258 +182,243 @@ const PerfilUser = () => {
   const direccionesArray = direcciones.content || direcciones || [];
 
   return (
-    <div className="perfil-grid">
-      <section className="perfil-panel perfil-main">
-        <div className="perfil-panel-header">
-          <h2>Perfil</h2>
-          <a
-            href="#"
-            className="perfil-editar"
-            onClick={(e) => {
-              e.preventDefault();
-              editarPerfil();
-            }}
-          >
-            Editar
-          </a>
-        </div>
-        <div className="perfil-datos">
-          <div>
-            <span className="perfil-label">Nombre</span>
-            <div>{user.nombre || "—"}</div>
-          </div>
-          <div>
-            <span className="perfil-label">Apellido</span>
-            <div>{user.apellido || "—"}</div>
-          </div>
-          <div>
-            <span className="perfil-label">Teléfono</span>
-            <div>{user.telefono || "—"}</div>
-          </div>
-          <div>
-            <span className="perfil-label">Email</span>
-            <div>{user.email || "—"}</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="perfil-panel perfil-pago">
-        <TarjetasSection />
-      </section>
-
-      <section className="perfil-panel perfil-direccion">
-        <div className="perfil-panel-header">
-          <h3>Direcciones</h3>
-          {direccionesArray.length < 2 && (
-            <button
-              className="perfil-link perfil-btn-agregar"
-              onClick={() => setMostrarFormulario(true)}
-              disabled={loading || loadingDirecciones}
+    <div>
+      <div className="perfil-grid">
+        <section className="perfil-panel perfil-main">
+          <div className="perfil-panel-header">
+            <h2>Perfil</h2>
+            <a
+              href="#"
+              className="perfil-editar"
+              onClick={(e) => {
+                e.preventDefault();
+                editarPerfil();
+              }}
             >
-              + Agregar dirección
-            </button>
-          )}
-        </div>
-        <div className="perfil-panel-body">
-          {loadingDirecciones ? (
-            <p>Cargando direcciones...</p>
-          ) : direccionesArray.length === 0 ? (
-            <p className="perfil-sin-direcciones">
-              No tenés direcciones guardadas
-            </p>
-          ) : (
-            direccionesArray.map((direccion) => (
-              <div key={direccion.id} className="perfil-direccion-item">
-                <div className="perfil-direccion-contenido">
-                  <div className="perfil-direccion-texto">
-                    <strong>
-                      {user.nombre} {user.apellido}
-                    </strong>
-                    <br />
-                    {direccion.calle} {direccion.numero}
-                    <br />
-                    {direccion.departamento}
-                    {(direccion.codigoPostal || direccion.codigo_postal) &&
-                      ` (${direccion.codigoPostal || direccion.codigo_postal})`}
+              Editar
+            </a>
+          </div>
+          <div className="perfil-datos">
+            <div>
+              <span className="perfil-label">Nombre</span>
+              <div>{user.nombre || "—"}</div>
+            </div>
+            <div>
+              <span className="perfil-label">Apellido</span>
+              <div>{user.apellido || "—"}</div>
+            </div>
+            <div>
+              <span className="perfil-label">Teléfono</span>
+              <div>{user.telefono || "—"}</div>
+            </div>
+            <div>
+              <span className="perfil-label">Email</span>
+              <div>{user.email || "—"}</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="perfil-panel perfil-pago">
+          <TarjetasSection />
+        </section>
+
+        <section className="perfil-panel perfil-direccion">
+          <div className="perfil-panel-header">
+            <h3>Direcciones</h3>
+            {direccionesArray.length < 2 && (
+              <button
+                className="perfil-link perfil-btn-agregar"
+                onClick={() => setMostrarFormulario(true)}
+                disabled={loading || loadingDirecciones}
+              >
+                + Agregar dirección
+              </button>
+            )}
+          </div>
+          <div className="perfil-panel-body">
+            {loadingDirecciones ? (
+              <p>Cargando direcciones...</p>
+            ) : direccionesArray.length === 0 ? (
+              <p className="perfil-sin-direcciones">
+                No tenés direcciones guardadas
+              </p>
+            ) : (
+              direccionesArray.map((direccion) => (
+                <div key={direccion.id} className="perfil-direccion-item">
+                  <div className="perfil-direccion-contenido">
+                    <div className="perfil-direccion-texto">
+                      <strong>
+                        {user.nombre} {user.apellido}
+                      </strong>
+                      <br />
+                      {direccion.calle} {direccion.numero}
+                      <br />
+                      {direccion.departamento}
+                      {(direccion.codigoPostal || direccion.codigo_postal) &&
+                        ` (${direccion.codigoPostal || direccion.codigo_postal})`}
+                    </div>
+                  </div>
+                  <div className="perfil-direccion-acciones">
+                    <button
+                      className="perfil-btn-editar"
+                      onClick={() => editarDireccion(direccion)}
+                      disabled={loading}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="perfil-btn-eliminar"
+                      onClick={() => eliminarDireccionHandler(direccion.id)}
+                      disabled={loading}
+                    >
+                      Eliminar
+                    </button>
                   </div>
                 </div>
-                <div className="perfil-direccion-acciones">
+              ))
+            )}
+          </div>
+        </section>
+
+        {mostrarFormularioPerfil && (
+          <div className="perfil-modal-overlay" onClick={cerrarFormularioPerfil}>
+            <div
+              className="perfil-modal-contenido"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="perfil-modal-header">
+                <h3>Editar perfil</h3>
+                <button
+                  className="perfil-modal-cerrar"
+                  onClick={cerrarFormularioPerfil}
+                >
+                  ×
+                </button>
+              </div>
+              <form onSubmit={guardarPerfil} className="perfil-form-direccion">
+                <div className="perfil-form-row">
+                  <input
+                    type="text"
+                    name="nombre"
+                    placeholder="Nombre *"
+                    value={formularioPerfil.nombre}
+                    onChange={handlePerfilChange}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="apellido"
+                    placeholder="Apellido *"
+                    value={formularioPerfil.apellido}
+                    onChange={handlePerfilChange}
+                    required
+                  />
+                </div>
+                <input
+                  type="tel"
+                  name="telefono"
+                  placeholder="Teléfono"
+                  value={formularioPerfil.telefono}
+                  onChange={handlePerfilChange}
+                />
+                <div className="perfil-readonly-email">
+                  <span className="perfil-readonly-label">Email (no modificable)</span>
+                  <span className="perfil-readonly-value">{user.email}</span>
+                </div>
+                <div className="perfil-form-acciones">
                   <button
-                    className="perfil-btn-editar"
-                    onClick={() => editarDireccion(direccion)}
+                    type="button"
+                    className="perfil-btn-cancelar"
+                    onClick={cerrarFormularioPerfil}
                     disabled={loading}
                   >
-                    Editar
+                    Cancelar
                   </button>
                   <button
-                    className="perfil-btn-eliminar"
-                    onClick={() => eliminarDireccionHandler(direccion.id)}
+                    type="submit"
+                    className="perfil-btn-guardar"
                     disabled={loading}
                   >
-                    Eliminar
+                    {loading ? "Guardando..." : "Guardar"}
                   </button>
                 </div>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      {mostrarFormularioPerfil && (
-        <div className="perfil-modal-overlay" onClick={cerrarFormularioPerfil}>
-          <div
-            className="perfil-modal-contenido"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="perfil-modal-header">
-              <h3>Editar perfil</h3>
-              <button
-                className="perfil-modal-cerrar"
-                onClick={cerrarFormularioPerfil}
-              >
-                ×
-              </button>
+              </form>
             </div>
-            <form onSubmit={guardarPerfil} className="perfil-form-direccion">
-              <input
-                type="text"
-                name="nombre"
-                placeholder="Nombre *"
-                value={formularioPerfil.nombre}
-                onChange={handlePerfilChange}
-                required
-              />
-              <input
-                type="text"
-                name="apellido"
-                placeholder="Apellido *"
-                value={formularioPerfil.apellido}
-                onChange={handlePerfilChange}
-                required
-              />
-              <input
-                type="tel"
-                name="telefono"
-                placeholder="Teléfono"
-                value={formularioPerfil.telefono}
-                onChange={handlePerfilChange}
-              />
-              <div
-                style={{
-                  padding: "12px",
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: "4px",
-                  marginBottom: "12px",
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "12px",
-                    color: "#666",
-                    display: "block",
-                    marginBottom: "4px",
-                  }}
-                >
-                  Email (no modificable)
-                </span>
-                <span style={{ fontSize: "14px", color: "#333" }}>
-                  {user.email}
-                </span>
-              </div>
-              <div className="perfil-form-acciones">
-                <button
-                  type="button"
-                  className="perfil-btn-cancelar"
-                  onClick={cerrarFormularioPerfil}
-                  disabled={loading}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="perfil-btn-guardar"
-                  disabled={loading}
-                >
-                  {loading ? "Guardando..." : "Guardar"}
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+        )}
 
-      {mostrarFormulario && (
-        <div className="perfil-modal-overlay" onClick={cerrarFormulario}>
-          <div
-            className="perfil-modal-contenido"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="perfil-modal-header">
-              <h3>
-                {direccionEditando ? "Editar dirección" : "Nueva dirección"}
-              </h3>
-              <button
-                className="perfil-modal-cerrar"
-                onClick={cerrarFormulario}
-              >
-                ×
-              </button>
-            </div>
-            <form onSubmit={guardarDireccion} className="perfil-form-direccion">
-              <div className="perfil-form-row">
-                <input
-                  type="text"
-                  name="calle"
-                  placeholder="Calle *"
-                  value={formularioDireccion.calle}
-                  onChange={handleDireccionChange}
-                  required
-                />
-                <input
-                  type="text"
-                  name="numero"
-                  placeholder="Número *"
-                  value={formularioDireccion.numero}
-                  onChange={handleDireccionChange}
-                  required
-                />
-              </div>
-              <input
-                type="text"
-                name="departamento"
-                placeholder="Departamento *"
-                value={formularioDireccion.departamento}
-                onChange={handleDireccionChange}
-                required
-              />
-              <input
-                type="text"
-                name="codigoPostal"
-                placeholder="Código Postal"
-                value={formularioDireccion.codigoPostal}
-                onChange={handleDireccionChange}
-              />
-              <div className="perfil-form-acciones">
+        {mostrarFormulario && (
+          <div className="perfil-modal-overlay" onClick={cerrarFormulario}>
+            <div
+              className="perfil-modal-contenido"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="perfil-modal-header">
+                <h3>
+                  {direccionEditando ? "Editar dirección" : "Nueva dirección"}
+                </h3>
                 <button
-                  type="button"
-                  className="perfil-btn-cancelar"
+                  className="perfil-modal-cerrar"
                   onClick={cerrarFormulario}
-                  disabled={loading}
                 >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="perfil-btn-guardar"
-                  disabled={loading}
-                >
-                  {loading ? "Guardando..." : "Guardar"}
+                  ×
                 </button>
               </div>
-            </form>
+              <form onSubmit={guardarDireccion} className="perfil-form-direccion">
+                <div className="perfil-form-row">
+                  <input
+                    type="text"
+                    name="calle"
+                    placeholder="Calle *"
+                    value={formularioDireccion.calle}
+                    onChange={handleDireccionChange}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="numero"
+                    placeholder="Número *"
+                    value={formularioDireccion.numero}
+                    onChange={handleDireccionChange}
+                    required
+                  />
+                </div>
+                <input
+                  type="text"
+                  name="departamento"
+                  placeholder="Departamento"
+                  value={formularioDireccion.departamento}
+                  onChange={handleDireccionChange}
+                />
+                <input
+                  type="text"
+                  name="codigoPostal"
+                  placeholder="Código Postal"
+                  value={formularioDireccion.codigoPostal}
+                  onChange={handleDireccionChange}
+                />
+                <div className="perfil-form-acciones">
+                  <button
+                    type="button"
+                    className="perfil-btn-cancelar"
+                    onClick={cerrarFormulario}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="perfil-btn-guardar"
+                    disabled={loading}
+                  >
+                    {loading ? "Guardando..." : "Guardar"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

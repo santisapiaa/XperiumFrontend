@@ -37,9 +37,6 @@ function Header() {
         <Link to="/experiencias">Experiencias</Link>
         <Link to="/eventos">Eventos</Link>
         <a href="#mas-vendidos">Más vendidos</a>
-      </nav>
-
-      <div className="actions">
         <input
           type="text"
           placeholder="Buscar experiencias..."
@@ -47,12 +44,14 @@ function Header() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyPress={handleKeyPress}
         />
-        <button className="btn-regalo">Abrir regalo</button>
-      </div>
+      <button className="btn-regalo">Abrir regalo</button>
+      </nav>
+
       
-      <div className="actions">
-        <User />
-        <Link to="/carrito">
+      
+      <div className="iconos">
+        <User  />
+        <Link  to="/carrito">
           <CartWidget />
         </Link>
       </div>

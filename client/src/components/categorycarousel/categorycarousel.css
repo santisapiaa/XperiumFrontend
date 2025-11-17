@@ -23,7 +23,7 @@
 
 .category-carousel-wrapper {
   position: relative;
-  max-width: 1400px;
+  max-width: 1450px;
   margin: 0 auto;
   padding: 0 60px;
 }
@@ -43,8 +43,9 @@
 }
 
 .category-card {
-  flex: 0 0 280px;
+  flex: 0 0 300px;
   cursor: pointer;
+  height: 410px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border-radius: 16px;
   overflow: hidden;
@@ -85,14 +86,14 @@
 }
 
 .category-info h3 {
-  font-size: 1.3rem;
+  font-size: 1.7rem;
   font-weight: 600;
   color: #1a1a1a;
   margin-bottom: 6px;
 }
 
 .category-info p {
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   color: #666;
 }
 

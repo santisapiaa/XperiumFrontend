@@ -135,10 +135,18 @@
   background-color: #c0392b;
 }
 
-.lista-tarjetas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
+/* Replaced grid layout with carousel layout */
+.lista-tarjetas-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
 }
 
 .tarjeta-card {
@@ -152,6 +160,8 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 200px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .badge-principal {
@@ -232,6 +242,51 @@
   background-color: rgba(255, 0, 0, 0.3);
 }
 
+/* Added carousel controls styling */
+.carousel-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.carousel-btn {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.carousel-btn:hover {
+  background-color: #357abd;
+}
+
+.carousel-indicators {
+  display: flex;
+  gap: 8px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.indicator.active {
+  background-color: #4a90e2;
+}
+
 .error-message {
   background-color: #f8d7da;
   color: #721c24;
@@ -251,5 +306,4 @@
   text-align: center;
   color: #999;
   padding: 40px 20px;
-  grid-column: 1 / -1;
 }

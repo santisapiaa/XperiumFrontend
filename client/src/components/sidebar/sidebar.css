@@ -1,5 +1,5 @@
 .sidebar {
-  width: 260px;
+  width: 330px;
   background: #fafafa;
   border-right: 1px solid #e6e6e6;
   padding: 1.5rem;
@@ -20,7 +20,7 @@
 }
 
 .sidebar-header h3 {
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #333;
   margin: 0;
 }
@@ -29,7 +29,7 @@
   background: none;
   border: none;
   color: #5b5bff;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   cursor: pointer;
   padding: 0;
 }
@@ -47,6 +47,7 @@
   justify-content: space-between;
   cursor: pointer;
   font-weight: 600;
+  font-size: 1.3rem;
   color: #222;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0;
@@ -67,7 +68,7 @@
 }
 
 .section-content label {
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   color: #555;
   cursor: pointer;
   display: flex;

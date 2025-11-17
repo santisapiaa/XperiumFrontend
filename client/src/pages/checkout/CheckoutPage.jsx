@@ -5,7 +5,7 @@ import { selectUser } from "../../redux/authSlice";
 import { crearOrden } from "../../redux/ordenesSlice";
 import PaymentMethods from "../../components/paymentMethods/PaymentMethods";
 import OrderSummary from "../../components/orderSummary/OrderSummary";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./CheckoutPage.css";
 
 function CheckoutPage() {
@@ -17,16 +17,17 @@ function CheckoutPage() {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Validar que haya carrito y usuario
-  if (cartItems.length === 0) {
-    navigate("/carrito");
-    return null;
-  }
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      navigate("/carrito");
+    }
+  }, [cartItems.length, navigate]);
 
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   const handleConfirmPurchase = async () => {
     if (!selectedPayment) {
@@ -64,6 +65,10 @@ function CheckoutPage() {
       setLoading(false);
     }
   };
+
+  if (cartItems.length === 0 || !user) {
+    return null;
+  }
 
   return (
     <div className="checkout-container">

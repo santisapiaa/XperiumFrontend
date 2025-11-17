@@ -13,6 +13,7 @@ export const TarjetasSection = () => {
   const { tarjetas, loading, error } = useSelector((state) => state.tarjetas);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [editandoId, setEditandoId] = useState(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const [formData, setFormData] = useState({
     numeroTarjeta: "",
     nombreTitular: "",
@@ -67,6 +68,7 @@ export const TarjetasSection = () => {
     if (window.confirm("¿Estás seguro de que deseas eliminar esta tarjeta?")) {
       try {
         await dispatch(eliminarTarjeta(id)).unwrap();
+        setCarouselIndex(0);
       } catch (err) {
         console.error("Error al eliminar tarjeta:", err);
       }
@@ -92,6 +94,18 @@ export const TarjetasSection = () => {
 
   const ocultarNumero = (numero) => {
     return `**** **** **** ${numero.slice(-4)}`;
+  };
+
+  const nextSlide = () => {
+    if (Array.isArray(tarjetas) && tarjetas.length > 0) {
+      setCarouselIndex((prev) => (prev + 1) % tarjetas.length);
+    }
+  };
+
+  const prevSlide = () => {
+    if (Array.isArray(tarjetas) && tarjetas.length > 0) {
+      setCarouselIndex((prev) => (prev - 1 + tarjetas.length) % tarjetas.length);
+    }
   };
 
   return (
@@ -215,41 +229,66 @@ export const TarjetasSection = () => {
 
       {loading && <p className="loading">Cargando tarjetas...</p>}
 
-      <div className="lista-tarjetas">
+      <div className="lista-tarjetas-carousel">
         {Array.isArray(tarjetas) && tarjetas.length > 0 ? (
-          tarjetas.map((tarjeta) => (
-            <div key={tarjeta.id} className="tarjeta-card">
-              {tarjeta.tarjetaPrincipal && (
-                <div className="badge-principal">Principal</div>
-              )}
-              <div className="tarjeta-info">
-                <div className="numero-tarjeta">
-                  {ocultarNumero(tarjeta.numeroTarjeta)}
-                </div>
-                <div className="titular">{tarjeta.nombreTitular}</div>
-                <div className="details">
-                  <span className="vencimiento">
-                    Vence: {tarjeta.fechaVencimiento}
-                  </span>
-                  <span className="tipo-badge">{tarjeta.tipoTarjeta}</span>
-                </div>
-              </div>
-              <div className="tarjeta-acciones">
-                <button
-                  className="btn-editar"
-                  onClick={() => handleEditar(tarjeta)}
-                >
-                  Editar
-                </button>
-                <button
-                  className="btn-eliminar"
-                  onClick={() => handleEliminar(tarjeta.id)}
-                >
-                  Eliminar
-                </button>
+          <>
+            <div className="carousel-container">
+              <div className="tarjeta-card">
+                {carouselIndex < tarjetas.length && tarjetas[carouselIndex] && (
+                  <>
+                    {tarjetas[carouselIndex].tarjetaPrincipal && (
+                      <div className="badge-principal">Principal</div>
+                    )}
+                    <div className="tarjeta-info">
+                      <div className="numero-tarjeta">
+                        {ocultarNumero(tarjetas[carouselIndex].numeroTarjeta)}
+                      </div>
+                      <div className="titular">{tarjetas[carouselIndex].nombreTitular}</div>
+                      <div className="details">
+                        <span className="vencimiento">
+                          Vence: {tarjetas[carouselIndex].fechaVencimiento}
+                        </span>
+                        <span className="tipo-badge">{tarjetas[carouselIndex].tipoTarjeta}</span>
+                      </div>
+                    </div>
+                    <div className="tarjeta-acciones">
+                      <button
+                        className="btn-editar"
+                        onClick={() => handleEditar(tarjetas[carouselIndex])}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn-eliminar"
+                        onClick={() => handleEliminar(tarjetas[carouselIndex].id)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-          ))
+            {tarjetas.length > 1 && (
+              <div className="carousel-controls">
+                <button className="carousel-btn prev" onClick={prevSlide}>
+                  ‹
+                </button>
+                <div className="carousel-indicators">
+                  {tarjetas.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`indicator ${index === carouselIndex ? "active" : ""}`}
+                      onClick={() => setCarouselIndex(index)}
+                    />
+                  ))}
+                </div>
+                <button className="carousel-btn next" onClick={nextSlide}>
+                  ›
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <p className="sin-tarjetas">No tienes tarjetas registradas</p>
         )}

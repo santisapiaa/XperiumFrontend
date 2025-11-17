@@ -5,8 +5,10 @@
 
 .gifts-container {
   display: flex;
+  justify-content: center;
   max-width: 1400px;
   margin: 0 auto;
+  margin-bottom: 5rem;
   padding: 2rem;
   gap: 2rem;
 }

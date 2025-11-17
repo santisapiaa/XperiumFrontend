@@ -13,12 +13,13 @@ import ProveedorPage from "./pages/proveedor/ProveedorPage";
 import DetalleOrdenPage from "./pages/detalleOrden/DetalleOrdenPage";
 import ProductDetailPage from "./pages/productDetail/ProductDetailPage";
 import CheckoutPage from "./pages/checkout/CheckoutPage";
+import "./App.css"
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="app-root">
-        <main className="app-content">
+      <div>
+        <main>
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/experiencias" element={<Regalospage />} />

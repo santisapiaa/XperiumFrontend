@@ -109,7 +109,7 @@ function CategoryCarousel() {
               />
               <div className="category-info">
                 <h3>{category.descripcion}</h3>
-                <p>{category.nombre || "Experiencias únicas"}</p>
+                <p>{category.nombre || "Ver más"}</p>
               </div>
             </div>
           ))}
